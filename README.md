@@ -321,17 +321,17 @@ PGDB-GAN achieves a remarkable balance: the most compact parameter count among c
 
 ### Visual Results
 
-![LOL Results](figures/Figure9_DarkFace_Results.png)
+![LOL Results](Visual comparison chart group/Figure9_DarkFace_Results.png)
 
 **Figure 6-8:** Visual comparison on LOL-test datasets. PGDB-GAN consistently recovers finer facial textures and maintains natural color fidelity compared to existing methods.
 
-![DarkFace Results](figures/Figure10_DarkFace_Results.png)
+![DarkFace Results](Visual comparison chart group/Figure10_DarkFace_Results.png)
 
 **Figures 9-11:** Visual comparison on DarkFace datasets. Red bounding boxes indicate successful face detection; PGDB-GAN preserves facial identity features even under extreme low-light conditions.
 
-![Additional Results](figures/Figure12.png)
-![Additional Results](figures/Figure13.png)
-![Additional Results](figures/Figure14.png)
+![Additional Results](Visual comparison chart group/Figure12.png)
+![Additional Results](Visual comparison chart group/Figure13.png)
+![Additional Results](Visual comparison chart group/Figure14.png)
 
 **Figures 12-14:** Additional visual comparisons demonstrating the robustness of PGDB-GAN across diverse lighting conditions.
 
@@ -345,7 +345,7 @@ PGDB-GAN achieves a remarkable balance: the most compact parameter count among c
 | Retinexformer | 0.9268 | 0.9919 | 0.8608 |
 | **PGDB-GAN** | **0.9991** | **0.9984** | **0.9737** |
 
-![Face Detection](figures/Figure15_Face_Detection.png)
+![Face Detection](Visual comparison chart group/Figure15_Face_Detection.png)
 
 **Figure 15:** Qualitative comparison of downstream face detection performance using MTCNN. PGDB-GAN preserves crucial facial geometric topology even under severe nocturnal degradation.
 
