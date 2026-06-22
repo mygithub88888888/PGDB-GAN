@@ -236,7 +236,7 @@ The PGDB-GAN is trained using a **three-stage pipeline**:
 | Parameter | Value |
 |:---|:---|
 | Optimizer | Adam |
-| β₁ | 0.9 |
+| β₁ | 0.5 |
 | β₂ | 0.999 |
 | Weight Decay | 0 (implicit via loss) |
 | Learning Rate Schedule | Constant (Stage 1), Reduce-on-Plateau (Stage 2) |
