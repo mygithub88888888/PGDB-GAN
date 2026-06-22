@@ -1,4 +1,4 @@
-﻿# Python
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -41,4 +41,3 @@ test_results/
 *.pth
 !weights/*.pt
 
-data/
