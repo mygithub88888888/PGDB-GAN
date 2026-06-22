@@ -40,3 +40,5 @@ test_results/
 # Weights
 *.pth
 !weights/*.pt
+
+data/
