@@ -1,4 +1,4 @@
-﻿# PGDB-GAN: A Dynamic Enhancement Method for Low-Light Facial Features through Synergy of Physical Illumination and Adversarial Learning
+# PGDB-GAN: A Dynamic Enhancement Method for Low-Light Facial Features through Synergy of Physical Illumination and Adversarial Learning
 
 **Official PyTorch Implementation**
 
@@ -80,8 +80,8 @@ PGDB-GAN/
 │   └── test_images/              # Sample test images
 ├── weights/                      # Pre-trained model weights
 │   ├── LOL.pt                    # Pre-trained on LOL dataset
-│   ├── LSRW-Huawei.pt            # Pre-trained on LSRW-Huawei subset
-│   └── LSRW-Nikon.pt             # Pre-trained on LSRW-Nikon subset
+│   ├── DarkFace.pt            # Pre-trained on DarkFace subset
+│   └── MIT-Adobe FiveK.pt             # Pre-trained on MIT-Adobe FiveK subset
 ├── figures/                      # Paper figures (PDF + PNG)
 ├── results/                      # Output directory for results
 │   └── checkpoints/              # Model checkpoints
@@ -144,9 +144,9 @@ Gabor-driven structured channel pruning:
 
 | Hyperparameter | Value | Description |
 |:---|---:|:---|
-| Batch Size | 1 | Training batch size |
-| Epochs | 2001 | Total training epochs |
-| Learning Rate | 0.0003 | Adam optimizer initial learning rate |
+| Batch Size | 16 | Training batch size |
+| Epochs | 3000 | Total training epochs |
+| Learning Rate | 2e-4 | Adam optimizer initial learning rate |
 | Optimizer | Adam | Adaptive moment estimation |
 | Gradient Clip Norm | 5.0 | Maximum gradient norm for clipping |
 | Random Seed | 2 | Reproducibility seed |
@@ -164,7 +164,7 @@ Gabor-driven structured channel pruning:
 | Hyperparameter | Value | Description |
 |:---|---:|:---|
 | Epochs | 5-10 | Distillation training epochs |
-| Learning Rate | 0.0001 | Student network learning rate |
+| Learning Rate | 1e-4 | Student network learning rate |
 | λ_distill | 0.7 | Distillation loss weight |
 | λ_gan | 0.1 | Adversarial loss weight |
 | λ_gabor | 0.5 | Gabor feature loss weight |
@@ -199,7 +199,7 @@ Gabor-driven structured channel pruning:
 
 | Component | Specification |
 |:---|:---|
-| GPU | NVIDIA RTX 4060 Ti (8 GB VRAM) |
+| GPU | NVIDIA RTX 4060 Ti (16 GB VRAM) |
 | CPU | Intel Core i7 / AMD Ryzen 7 series |
 | RAM | 32 GB |
 | OS | Windows 10/11, Ubuntu 20.04+ |
@@ -250,8 +250,8 @@ Pre-trained model weights are provided for immediate inference and fine-tuning o
 | Model | Dataset | Size | Description | Download |
 |:---|:---|:---|:---|:---|
 | `LOL.pt` | LOL | 358 KB | Pre-trained on LOL low-light dataset | [weights/LOL.pt](weights/LOL.pt) |
-| `LSRW-Huawei.pt` | LSRW (Huawei) | 358 KB | Pre-trained on LSRW-Huawei subset | [weights/LSRW-Huawei.pt](weights/LSRW-Huawei.pt) |
-| `LSRW-Nikon.pt` | LSRW (Nikon) | 358 KB | Pre-trained on LSRW-Nikon subset | [weights/LSRW-Nikon.pt](weights/LSRW-Nikon.pt) |
+| `DarkFace.pt` | DarkFace (Huawei) | 358 KB | Pre-trained on DarkFace subset | [weights/DarkFace.pt](weights/DarkFace.pt) |
+| `MIT-Adobe FiveK.pt` | DarkFace (Nikon) | 358 KB | Pre-trained on MIT-Adobe FiveK subset | [weights/MIT-Adobe FiveK.pt](weights/MIT-Adobe FiveK.pt) |
 
 ### Usage
 
@@ -390,9 +390,9 @@ python src/generate_masks.py \
 
 ```bash
 python scripts/train_stage1.py \
-    --batch_size 1 \
-    --lr 0.0003 \
-    --epochs 2001 \
+    --batch_size 16 \
+    --lr 2e-4 \
+    --epochs 3000 \
     --gpu 0 \
     --seed 2 \
     --save ./results/stage1
@@ -402,9 +402,9 @@ python scripts/train_stage1.py \
 
 ```bash
 python src/distillation.py \
-    --teacher_path ./results/stage1/model_epochs/weights_2000.pt \
+    --teacher_path ./results/stage1/model_epochs/weights_3000.pt \
     --epochs 10 \
-    --lr 0.0001
+    --lr 1e-4
 ```
 
 #### Stage 3: Gabor-Driven Structured Pruning
@@ -430,7 +430,7 @@ python scripts/test.py \
 To fully reproduce the experimental results reported in the paper:
 
 1. Download datasets: [LOL](https://daooshee.github.io/BMVC2018website/), [DarkFace](https://flyywh.github.io/CVPRW2019LowLight/), [MIT-Adobe FiveK](https://data.csail.mit.edu/graphics/fivek/)
-2. Train Stage 1 on LOL dataset (~2000 epochs, ~8 hours on RTX 4060 Ti)
+2. Train Stage 1 on LOL dataset (~3000 epochs, ~8 hours on RTX 4060 Ti)
 3. Distill with face masks (~10 epochs, ~2 hours)
 4. Apply structured pruning (post-processing)
 5. Evaluate using provided test scripts
@@ -450,7 +450,7 @@ If you find our work helpful in your research, please cite:
 ```bibtex
 @article{tao2026pgdb,
   title={PGDB-GAN: A Dynamic Enhancement Method for Low-Light Facial Features through Synergy of Physical Illumination and Adversarial Learning},
-  author={Tao, Jin and Yan, Xianglong and Wang, Bo},
+  author={Yan, Xianglong and Tao, Jin},
   journal={Applied Soft Computing},
   year={2026},
   publisher={Elsevier},
