@@ -17,7 +17,7 @@
 
 ## Abstract
 
-Complex, low-light environments significantly interfere with the extraction of facial texture features, directly affecting the accuracy of extraction and the effectiveness of applications. This paper proposes a **Physics-Guided, Dual-Branch Generative Adversarial Network (PGDB-GAN)** that establishes a dynamic synergy between physical illumination modeling and adversarial feature learning. Unlike existing sequential Retinex-GAN frameworks, we construct an illumination-reflectance decomposition model to provide real-time spatial guidance for the adversarial enhancement process. This decomposition, achieved through triple constraints—global brightness matching, pixel-wise adaptive adjustment, and illumination smoothness—acts as a physical consistency prior that constrains the search space of the dual-branch GAN, balancing noise suppression and luminance restoration. By adaptively leveraging these illumination priors, the generative adversarial module realizes the collaborative optimization of adversarial loss and content loss to prevent identity distortion in extreme darkness. Furthermore, a face-perceptual distillation module and a dynamic attention mechanism are integrated within this synergistic pipeline, while a Gabor filter bank is adopted to prioritize the preservation of multi-scale facial texture details. Finally, structured pruning and local variance reduction techniques are incorporated for model lightweighting. Extensive experiments demonstrate that our method outperforms other state-of-the-art approaches in both visual quality and facial identity preservation.
+Complex, low-light environments significantly interfere with the extraction of facial texture features, directly affecting the accuracy of extraction and the effectiveness of applications. This paper proposes a **Physics-Guided, Dual-Branch Generative Adversarial Network (PGDB-GAN)** that establishes a dynamic synergy between physical illumination modeling and adversarial feature learning. Unlike existing sequential Retinex-GAN frameworks, we construct an illumination-reflectance decomposition model to provide real-time spatial guidance for the adversarial enhancement process. This decomposition, achieved through triple constraints—global brightness matching, pixel-wise adaptive adjustment, and illumination smoothness—acts as a physical consistency prior that constrains the search space of the dual-branch GAN, balancing noise suppression and luminance restoration. By adaptively leveraging these illumination priors, the generative adversarial module realizes the collaborative optimization of adversarial loss and content loss to prevent identity distortion in extreme darkness. Furthermore, a face-perceptual distillation module and a dynamic attention mechanism are integrated within this synergistic pipeline, while a Gabor filter bank is adopted to prioritize the preservation of multi-scale facial texture details. Finally, structured pruning and local variance reduction techniques are incorporated for model lightweighting. Extensive experiments demonstrate that our method outperforms other state-of-the-art approaches in both visual quality and facial structural fidelity.
 
 ---
 
@@ -25,9 +25,9 @@ Complex, low-light environments significantly interfere with the extraction of f
 
 - **Physics-Guided Synergy Framework with Dynamic Spatial Guidance:** Unlike traditional sequential Retinex-GAN methods, we propose a zero-reference framework that establishes a dynamic synergy between physical illumination modeling and adversarial learning. The Retinex-based illumination priors serve as real-time spatial guidance maps that constrain the GAN search space, effectively preventing identity distortion in extreme darkness.
 
-- **Face-Specific Texture-Aware Enhancement via Gabor-Guided Coupling:** By coupling learnable Gabor filters with facial geometric priors, the model adaptively strengthens directional textures in discriminative regions, bridging the "physical-perceptual gap" and ensuring that high-frequency facial details are reconstructed with both structural accuracy and biometric fidelity.
+- **Face-Specific Texture-Aware Enhancement via Gabor-Guided Coupling:** By coupling learnable Gabor filters with facial geometric priors, the model adaptively strengthens directional textures in discriminative regions, bridging the "physical-perceptual gap" and ensuring that high-frequency facial details are reconstructed with both structural accuracy and structural fidelity.
 
-- **Hotspot-Aware Distillation for Identity-Preserving Model Optimization:** Instead of generic feature imitation, our strategy specifically transfers "identity-critical" attention and directional sensitivity from the teacher to a lightweight student network. Combined with structured pruning and Ghost modules, this achieves a balance between real-time inference (3 ms) and high-fidelity facial reconstruction.
+- **Hotspot-Aware Distillation for Detail-Preserving Model Optimization:** Instead of generic feature imitation, our strategy specifically transfers "texture-critical" attention and directional sensitivity from the teacher to a lightweight student network. Combined with structured pruning and Ghost modules, this achieves a balance between real-time inference (3 ms) and high-fidelity facial reconstruction.
 
 ---
 
@@ -431,9 +431,43 @@ PGDB-GAN achieves a remarkable balance: the most compact parameter count among c
 | Retinexformer | 0.9268 | 0.9919 | 0.8608 |
 | **PGDB-GAN** | **0.9991** | **0.9984** | **0.9737** |
 
-![Face Detection](Visual comparison chart group/Figure15_Face_Detection.png)
+![Face Detection](Visual%20comparison%20chart%20group/Figure18.png)
 
-**Figure 15:** Qualitative comparison of downstream face detection performance using MTCNN. PGDB-GAN preserves crucial facial geometric topology even under severe nocturnal degradation.
+**Downstream face detection comparison:** MTCNN detection results under varying downsampling scales (x1, x2, x4) comparing PGDB-GAN with SCI, SNR-Net, and Retinexformer. Red bounding boxes indicate successful detections with confidence scores; orange "Missed" labels indicate complete localization failures. PGDB-GAN uniquely preserves facial geometric topology under severe x4 degradation, maintaining an average confidence of 0.9737 where competing methods fail.
+
+---
+
+## Visual Comparison
+
+### LOL Dataset
+
+PGDB-GAN outperforms all compared methods on the LOL benchmark, achieving superior noise suppression and detail recovery with minimal artifacts. The enhanced outputs exhibit natural illumination, sharp facial contours, and faithful texture preservation compared to competing approaches.
+
+![LOL Comparison 1](Visual%20comparison%20chart%20group/Figure12.png)
+
+![LOL Comparison 2](Visual%20comparison%20chart%20group/Figure13.png)
+
+![LOL Comparison 3](Visual%20comparison%20chart%20group/Figure14.png)
+
+### DarkFace Dataset
+
+On the challenging unpaired DarkFace benchmark, PGDB-GAN demonstrates exceptional zero-shot generalization. The enhanced faces exhibit naturally balanced illumination and well-preserved structural details, while competing methods frequently suffer from over-exposure, color shifts, or residual noise artifacts.
+
+![DarkFace Comparison 1](Visual%20comparison%20chart%20group/Figure9_DarkFace_Results.png)
+
+![DarkFace Comparison 2](Visual%20comparison%20chart%20group/Figure10_DarkFace_Results.png)
+
+![DarkFace Comparison 3](Visual%20comparison%20chart%20group/Figure11_DarkFace_Results.png)
+
+### MIT-Adobe FiveK Dataset
+
+PGDB-GAN generalizes effectively to general-purpose enhancement on the MIT-Adobe FiveK dataset, delivering balanced exposure and natural color rendition. The physical guidance mechanism ensures that enhancement remains visually realistic without introducing hallucinated textures.
+
+![FiveK Comparison 1](Visual%20comparison%20chart%20group/Figure15_Face_Detection.png)
+
+![FiveK Comparison 2](Visual%20comparison%20chart%20group/Figure16.png)
+
+![FiveK Comparison 3](Visual%20comparison%20chart%20group/Figure17.png)
 
 ---
 
