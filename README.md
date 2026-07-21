@@ -1,53 +1,66 @@
-# PGDB-GAN: A Dynamic Enhancement Method for Low-Light Facial Features through Synergy of Physical Illumination and Adversarial Learning
+# PGDB-GAN: Physics-Guided Dual-Branch GAN for Low-Light Facial Enhancement
 
 **Official PyTorch Implementation**
 
-[![Paper](https://img.shields.io/badge/Journal-Applied_Soft_Computing-blue)](https://doi.org/10.1016/j.asoc.2026.xxxxx)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-1.10+-red)](https://pytorch.org/)
+[![CUDA](https://img.shields.io/badge/CUDA-11.3+-green)](https://developer.nvidia.com/cuda-toolkit)
 
-**Authors:** Xianglong Yan, Jin Tao  
-**Affiliation:** School of Artificial Intelligence, Gansu University of Political Science and Law, Lanzhou, China  
-**Journal:** Applied Soft Computing (Elsevier, SCI Q1)  
-**DOI:** https://doi.org/10.1016/j.asoc.2026.xxxxx  
-**Repository:** https://github.com/mygithub88888888/PGDB-GAN
+**Authors:** Xianglong Yan, Jin Tao
+**Affiliation:** School of Artificial Intelligence, Gansu University of Political Science and Law, Lanzhou, China
+**Journal:** Applied Soft Computing (Elsevier)
+**Paper:** [DOI pending]
 
 ---
 
 ## Abstract
 
-Complex, low-light environments significantly interfere with the extraction of facial texture features, directly affecting the accuracy of extraction and the effectiveness of applications. This paper proposes a **Physics-Guided, Dual-Branch Generative Adversarial Network (PGDB-GAN)** that establishes a dynamic synergy between physical illumination modeling and adversarial feature learning. Unlike existing sequential Retinex-GAN frameworks, we construct an illumination-reflectance decomposition model to provide real-time spatial guidance for the adversarial enhancement process. This decomposition, achieved through triple constraints—global brightness matching, pixel-wise adaptive adjustment, and illumination smoothness—acts as a physical consistency prior that constrains the search space of the dual-branch GAN, balancing noise suppression and luminance restoration. By adaptively leveraging these illumination priors, the generative adversarial module realizes the collaborative optimization of adversarial loss and content loss to prevent identity distortion in extreme darkness. Furthermore, a face-perceptual distillation module and a dynamic attention mechanism are integrated within this synergistic pipeline, while a Gabor filter bank is adopted to prioritize the preservation of multi-scale facial texture details. Finally, structured pruning and local variance reduction techniques are incorporated for model lightweighting. Extensive experiments demonstrate that our method outperforms other state-of-the-art approaches in both visual quality and facial identity preservation.
+We propose **PGDB-GAN**, a Physics-Guided Dual-Branch Generative Adversarial Network that establishes a dynamic synergy between physical illumination modeling and adversarial feature learning for low-light facial image enhancement. The framework integrates Retinex-based illumination decomposition as real-time spatial guidance for a dual-branch GAN, a face-perceptual distillation module with Gabor filter banks for multi-scale texture preservation, and structured pruning for efficient edge deployment (1.32M parameters, 3 ms inference at 720P).
 
 ---
 
-## Key Contributions
+## Quick Start
 
-- **Physics-Guided Synergy Framework with Dynamic Spatial Guidance:** Unlike traditional sequential Retinex-GAN methods, we propose a zero-reference framework that establishes a dynamic synergy between physical illumination modeling and adversarial learning. The Retinex-based illumination priors serve as real-time spatial guidance maps that constrain the GAN search space, effectively preventing identity distortion in extreme darkness.
+```bash
+# Clone the repository
+git clone https://github.com/mygithub88888888/PGDB-GAN.git
+cd PGDB-GAN
 
-- **Face-Specific Texture-Aware Enhancement via Gabor-Guided Coupling:** By coupling learnable Gabor filters with facial geometric priors, the model adaptively strengthens directional textures in discriminative regions, bridging the "physical-perceptual gap" and ensuring that high-frequency facial details are reconstructed with both structural accuracy and biometric fidelity.
+# Install dependencies
+pip install -r requirements.txt
 
-- **Hotspot-Aware Distillation for Identity-Preserving Model Optimization:** Instead of generic feature imitation, our strategy specifically transfers "identity-critical" attention and directional sensitivity from the teacher to a lightweight student network. Combined with structured pruning and Ghost modules, this achieves a balance between real-time inference (3 ms) and high-fidelity facial reconstruction.
+# Run inference with a pre-trained checkpoint
+python scripts/test.py \
+    --data_path_test_low ./data/test_images/ \
+    --model_test ./weights/LOL.pt \
+    --save ./test_results/
+```
 
 ---
 
-## Overall Architecture
+## Installation
 
-![Architecture](figures/Figure1_Architecture.png)
+### Requirements
 
-**Figure 1:** The overall architecture of PGDB-GAN, highlighting the dynamic synergy between physical illumination modeling and facial texture-aware adversarial learning. Unlike sequential pipelines, our framework integrates Retinex-based illumination priors as spatial guidance to constrain the dual-branch GAN enhancement.
+- Python 3.8+
+- PyTorch 1.10+ with CUDA 11.3+
+- 16 GB GPU memory recommended (tested on NVIDIA RTX 4060 Ti)
 
-![Network Detail](figures/Figure2_Network_Detail.png)
+```bash
+pip install -r requirements.txt
+```
 
-**Figure 2:** Detailed network architecture of the decomposition and enhancement branches.
+### Hardware
 
-![GAN Framework](figures/Figure3_GAN_Framework.png)
-
-**Figure 3:** Zero-shot Low-light Face Texture Enhancement Framework with Mask Guidance. Comprises face texture enhancement network T (encoder-decoder with skip-connections, mask-guided module) and face-specific PatchGAN discriminator D.
-
-![Gabor Distillation](figures/Figure4.png)
-
-**Figure 4:** Face-aware Gabor feature distillation framework.
+| Component | Specification |
+|:---|:---|
+| GPU | NVIDIA RTX 4060 Ti (16 GB VRAM) |
+| CPU | Intel Core i7-10700K @ 3.80 GHz |
+| RAM | 16 GB |
+| OS | Windows 11 / Ubuntu 20.04+ |
+| CUDA | 11.3+ |
+| cuDNN | 8.2+ |
 
 ---
 
@@ -56,37 +69,41 @@ Complex, low-light environments significantly interfere with the extraction of f
 ```
 PGDB-GAN/
 ├── src/                          # Core source code
-│   ├── model.py                  # Base model: Enhancer, Denoise_1/2, Network, Finetunemodel
-│   ├── model_gan.py              # GAN model: Generator and PatchGAN Discriminator
-│   ├── loss.py                   # Loss functions: LossFunction, TextureDifference, SmoothLoss, L_TV
-│   ├── loss_gan.py               # GAN-specific loss functions
-│   ├── utils.py                  # Utility functions: Gaussian kernel, local variance, blur, downsampler
-│   ├── utils_gan.py              # GAN utilities: Gabor filters, visualization, checkpoint management
-│   ├── dataset.py                # Data loader for paired/unpaired image datasets
-│   ├── dataset_gan.py            # GAN data loader with mask support
+│   ├── model.py                  # Base model: LD-Net, IE-Net, RD-Net, Finetunemodel
+│   ├── model_gan.py              # GAN model: Generator (Enhancer), PatchGAN Discriminator
+│   ├── model111.py               # Extended GAN model variant
+│   ├── loss.py                   # Composite loss: enhancement, reconstruction, color, smoothness, TV
+│   ├── loss_gan.py               # GAN loss: adversarial, perceptual, Gabor texture alignment
+│   ├── gan_losses.py             # Additional GAN loss components
 │   ├── distillation.py           # Face-aware knowledge distillation (Stage 2)
 │   ├── pruning.py                # Gabor-driven structured pruning (Stage 3)
-│   ├── generate_masks.py         # Preprocessing: face mask generation from annotations
-│   ├── data_filter.py            # Data filtering utility based on face ratio
-│   └── gan_*.py                  # Additional GAN variant modules
+│   ├── generate_masks.py         # Face mask generation from bounding box annotations
+│   ├── data_filter.py            # Data filtering based on face region ratio
+│   ├── dataset.py                # Data loader for paired/unpaired image datasets
+│   ├── dataset_gan.py            # GAN data loader with mask support
+│   ├── gan_dataset.py            # Alternative GAN dataset loader
+│   ├── gan_config.py             # GAN configuration
+│   ├── gan_train.py              # GAN training loop
+│   ├── utils.py                  # Utilities: Gabor filters, visualization, checkpoint management
+│   └── utils_gan.py              # GAN utilities
 ├── scripts/                      # Training and evaluation scripts
-│   ├── train_stage1.py           # Stage 1: Base model training
-│   ├── train_gan.py              # GAN training script
+│   ├── train_stage1.py           # Stage 1: Physical foundation + joint GAN training
+│   ├── train_gan.py              # Alternative GAN training entry point
 │   ├── test.py                   # Model inference and evaluation
 │   └── test_gan.py               # GAN model testing
 ├── configs/                      # Configuration files
-├── data/                         # Data directory
-│   ├── template/                 # Data structure template
-│   └── test_images/              # Sample test images
-├── weights/                      # Pre-trained model weights
+│   └── default.yaml              # Default training configuration
+├── data/                         # Data directory (populated by user)
+│   ├── data_choose/              # Pre-filtered training data
+│   └── data_choose_denoise/      # Pre-filtered denoising data
+├── weights/                      # Pre-trained model checkpoints
 │   ├── LOL.pt                    # Pre-trained on LOL dataset
-│   ├── DarkFace.pt            # Pre-trained on DarkFace subset
-│   └── MIT-Adobe FiveK.pt             # Pre-trained on MIT-Adobe FiveK subset
-├── figures/                      # Paper figures (PDF + PNG)
-├── results/                      # Output directory for results
-│   └── checkpoints/              # Model checkpoints
-├── train_results/                # Representative training results
-├── test_results/                 # Representative test results
+│   ├── L-Nikon.pt                # Pre-trained on DarkFace (Nikon subset)
+│   ├── LSRW.pt                   # Pre-trained on DarkFace (LSRW subset)
+│   ├── weights_3000.pt           # Stage 1 checkpoint (3,000 epochs)
+│   └── weights_100000.pt         # Stage 2 checkpoint (100,000 iterations)
+├── figures/                      # Paper figures
+├── Visual comparison chart group/ # Qualitative comparison visualizations
 ├── requirements.txt              # Python dependencies
 ├── README.md                     # This file
 └── LICENSE                       # MIT License
@@ -94,346 +111,277 @@ PGDB-GAN/
 
 ---
 
-## Module Descriptions
+## Data Preparation
 
-### Core Model (`src/model.py`)
+### Datasets
 
-| Class | Description |
-|-------|-------------|
-| `Denoise_1` | Single-stage denoising network for initial noise suppression |
-| `Denoise_2` | Two-stage denoising network processing concatenated illumination-reflectance pairs |
-| `Enhancer` | Multi-layer convolutional enhancement network with residual connections |
-| `Network` | Full PGDB-GAN model integrating denoising, enhancement, and Retinex decomposition |
-| `Finetunemodel` | Lightweight inference model loading pre-trained weights for deployment |
+PGDB-GAN is evaluated on three benchmarks. For exact reproducibility, the data splits used in our experiments are specified below.
 
-### Loss Functions (`src/loss.py`)
+#### LOL (LOw-Light) Dataset
 
-| Class | Description |
-|-------|-------------|
-| `LossFunction` | Composite loss integrating enhancement, reconstruction, color, illumination, and variance constraints |
-| `TextureDifference` | Gabor-based texture difference computation for facial detail preservation |
-| `SmoothLoss` | Anisotropic total variation regularization for illumination smoothness |
-| `L_TV` | Weighted total variation loss with Gaussian-guided gradient coefficients |
+- **Source:** [Wei et al., BMVC 2018](https://daooshee.github.io/BMVC2018website/)
+- **Resolution:** 600 x 400 pixels
+- **Train/Test Split:** 485 training pairs / 15 testing pairs (standard public split)
+- **Format:** Paired low-light / normal-light images in separate directories
 
-### GAN Components (`src/model_gan.py`, `src/loss_gan.py`)
+```
+data/LOL/
+├── train/
+│   ├── low/          # 485 low-light training images
+│   └── high/         # 485 normal-light training images
+└── test/
+    ├── low/          # 15 low-light testing images
+    └── high/         # 15 normal-light testing images (ground truth)
+```
 
-| Component | Description |
-|-----------|-------------|
-| Generator | Enhancer network for low-light facial image restoration |
-| Discriminator | Face-specific PatchGAN discriminator for adversarial training |
+#### MIT-Adobe FiveK Dataset
 
-### Distillation (`src/distillation.py`)
+- **Source:** [Bychkovsky et al., CVPR 2011](https://data.csail.mit.edu/graphics/fivek/)
+- **Resolution:** Resized to 256 x 256 pixels for training and evaluation
+- **Train/Test Split:** 4,500 training pairs / 500 testing pairs (Expert-C subset)
+- **Format:** Paired RAW / Expert-C retouched images
 
-Face-aware knowledge distillation transferring texture-critical features from teacher to student network using:
-- Deep feature alignment (VGG16 conv4_3 layer)
-- Gabor feature alignment (multi-scale, multi-orientation Gabor filter bank)
-- Face mask-guided attention focusing
+```
+data/FiveK/
+├── train/
+│   ├── input/        # 4,500 RAW training images
+│   └── expert_c/     # 4,500 Expert-C retouched images
+└── test/
+    ├── input/        # 500 RAW testing images
+    └── expert_c/     # 500 Expert-C retouched images
+```
 
-### Pruning (`src/pruning.py`)
+#### DarkFace Dataset
 
-Gabor-driven structured channel pruning:
-- Channel importance scoring via Gabor activation strength
-- Threshold-based redundant channel removal
-- Texture retention loss for post-pruning fine-tuning
+- **Source:** [Yang et al., TPAMI 2022](https://flyywh.github.io/CVPRW2019LowLight/)
+- **Resolution:** Evaluated at 600 x 400 pixels
+- **Split:** Subject-disjoint --- no individual appears in both training and testing sets
+- **Format:** Unpaired low-light facial images with bounding box annotations
 
----
+```
+data/DarkFace/
+├── train/
+│   ├── image/        # Low-light training images
+│   └── label/        # Bounding box annotations
+└── test/
+    ├── image/        # Low-light testing images
+    └── label/        # Bounding box annotations
+```
 
-## Hyperparameters
+### Preprocessing
 
-### Stage 1: Base Model Training
-
-| Hyperparameter | Value | Description |
-|:---|---:|:---|
-| Batch Size | 16 | Training batch size |
-| Epochs | 3000 | Total training epochs |
-| Learning Rate | 2e-4 | Adam optimizer initial learning rate |
-| Optimizer | Adam | Adaptive moment estimation |
-| Gradient Clip Norm | 5.0 | Maximum gradient norm for clipping |
-| Random Seed | 2 | Reproducibility seed |
-| Enhancement Loss Weight | 700 | λ_enhan, global brightness matching |
-| Pixel Adaptive Loss Weight | 1000 | λ_pixel, local brightness adaptation |
-| Smoothness Loss Weight | 5 | λ_smooth, illumination smoothness |
-| TV Loss Weight | 1600 | λ_tv, total variation regularization |
-| Reconstruction Loss Weight | 1000 | λ_recon, paired downsampling consistency |
-| Color Loss Weight | 10000 | λ_color, color consistency constraint |
-| Illumination Loss Weight | 1000 | λ_ill, illumination component alignment |
-| Variance Loss Weight | 1000 | λ_var, local variance consistency |
-
-### Stage 2: Knowledge Distillation
-
-| Hyperparameter | Value | Description |
-|:---|---:|:---|
-| Epochs | 5-10 | Distillation training epochs |
-| Learning Rate | 1e-4 | Student network learning rate |
-| λ_distill | 0.7 | Distillation loss weight |
-| λ_gan | 0.1 | Adversarial loss weight |
-| λ_gabor | 0.5 | Gabor feature loss weight |
-| Temperature | 1.0 | Knowledge distillation temperature |
-| λ_depth | 10 | Deep feature alignment weight |
-| λ_gabor (align) | 5 | Gabor feature alignment weight |
-| Gabor Orientations | 6 | Number of Gabor filter orientations |
-| Gabor Frequency Bands | 2 | Number of frequency bands (low, mid) |
-
-### Stage 3: Structured Pruning
-
-| Hyperparameter | Value | Description |
-|:---|---:|:---|
-| Pruning Amount | 0.2-0.3 | Proportion of channels to prune |
-| Compression Ratio | 91.5% | Model size reduction (15.54 MB → 1.32 MB) |
-| Threshold Formula | τ = μ(s) - 2σ(s) | Channel importance threshold |
-| Gabor Kernel Size | 3 | Gabor filter kernel size |
-
-### Physical Prior Constants
-
-| Constant | Value | Description |
-|:---|---:|:---|
-| α | 0.5 | Brightness scaling coefficient |
-| β | 0.7 | Adaptive adjustment ratio base |
-| ε | 1e-9 | Numerical stability epsilon |
-
----
-
-## Training Configuration
-
-### Hardware Environment
-
-| Component | Specification |
-|:---|:---|
-| GPU | NVIDIA RTX 4060 Ti (16 GB VRAM) |
-| CPU | Intel Core i7 / AMD Ryzen 7 series |
-| RAM | 32 GB |
-| OS | Windows 10/11, Ubuntu 20.04+ |
-| CUDA | 11.3+ |
-| cuDNN | 8.2+ |
-
-### Software Environment
-
-| Component | Version |
-|:---|:---|
-| Python | 3.8+ |
-| PyTorch | 1.10+ |
-| torchvision | 0.11+ |
-| NumPy | 1.21+ |
-| Pillow | 9.0+ |
-| scikit-image | 0.19+ |
-| Matplotlib | 3.5+ |
-| thop | 0.1+ |
-| scikit-learn | 1.0+ |
-| tqdm | 4.62+ |
-
-### Training Strategy
-
-The PGDB-GAN is trained using a **three-stage pipeline**:
-
-1. **Stage 1 — Base Model Training:** End-to-end training of the full-parameter model with physics-guided synergy. The illumination decomposition network (IE-Net) and GAN are jointly optimized with the composite loss function L_total.
-
-2. **Stage 2 — Face-Aware Distillation:** Knowledge transfer from the heavy teacher network to a lightweight student network. Gabor feature alignment and face mask-guided attention ensure texture fidelity in discriminative facial regions.
-
-3. **Stage 3 — Gabor-Driven Pruning:** Structured channel pruning based on Gabor feature sensitivity scores. Post-pruning fine-tuning with texture retention loss preserves facial detail quality.
-
-### Optimizer Configuration
-
-| Parameter | Value |
-|:---|:---|
-| Optimizer | Adam |
-| β₁ | 0.5 |
-| β₂ | 0.999 |
-| Weight Decay | 0 (implicit via loss) |
-| Learning Rate Schedule | Constant (Stage 1), Reduce-on-Plateau (Stage 2) |
+1. **Face Mask Generation:** Run `src/generate_masks.py` to construct binary face masks from bounding box annotations (used for DarkFace).
+2. **Data Filtering:** Run `src/data_filter.py` to filter images based on face region ratio (IoU > 0.5 deduplication).
+3. **Augmentation:** Training-time only --- random horizontal flipping and random resizing within [0.8, 1.2] scale range.
+4. **Normalization:** All input images normalized to [0, 1]. No additional preprocessing during testing.
 
 ---
 
 ## Pre-trained Models
 
-Pre-trained model weights are provided for immediate inference and fine-tuning on different datasets.
+We provide pre-trained checkpoints for immediate inference. All weights are the structurally pruned student models (1.32M parameters).
 
-| Model | Dataset | Size | Description | Download |
-|:---|:---|:---|:---|:---|
-| `LOL.pt` | LOL | 358 KB | Pre-trained on LOL low-light dataset | [weights/LOL.pt](weights/LOL.pt) |
-| `DarkFace.pt` | DarkFace (Huawei) | 358 KB | Pre-trained on DarkFace subset | [weights/DarkFace.pt](weights/DarkFace.pt) |
-| `MIT-Adobe FiveK.pt` | DarkFace (Nikon) | 358 KB | Pre-trained on MIT-Adobe FiveK subset | [weights/MIT-Adobe FiveK.pt](weights/MIT-Adobe FiveK.pt) |
+| Checkpoint | Dataset | Size |
+|:---|:---|:---|
+| [`weights/LOL.pt`](weights/LOL.pt) | LOL (low-light paired) | 358 KB |
+| [`weights/L-Nikon.pt`](weights/L-Nikon.pt) | DarkFace (Nikon subset) | 358 KB |
+| [`weights/LSRW.pt`](weights/LSRW.pt) | DarkFace (LSRW subset) | 358 KB |
 
-### Usage
+**Intermediate checkpoints** (for reproducing the full training pipeline):
+
+| Checkpoint | Stage | Size | Description |
+|:---|:---|:---|:---|
+| [`weights/weights_3000.pt`](weights/weights_3000.pt) | Stage 1 | 358 KB | Physical foundation initialization (3,000 epochs) |
+| [`weights/weights_100000.pt`](weights/weights_100000.pt) | Stage 2 | 3.01 MB | Joint GAN training (100,000 iterations) |
+
+### Inference with Pre-trained Weights
 
 ```python
+import torch
 from src.model import Finetunemodel
 
+# Load pre-trained checkpoint
 model = Finetunemodel('weights/LOL.pt')
 model = model.cuda()
 model.eval()
 
+# Run inference
 with torch.no_grad():
-    enhance, denoised = model(input_tensor)
+    enhanced, denoised = model(input_tensor)  # input_tensor shape: [1, 3, H, W]
 ```
 
----
-
-## Efficiency Metrics
-
-| Metric | Value | Platform |
-|:---|---:|:---|
-| Parameters (after pruning) | 1.320 M | PyTorch |
-| FLOPs | 74.200 G | PyTorch |
-| Inference Time (720P) | 0.003 s (3 ms) | NVIDIA RTX 4060 Ti |
-| Model Size (before pruning) | 15.54 MB | — |
-| Model Size (after pruning) | 1.32 MB | — |
-| Compression Ratio | 91.5% | — |
-
-### Comparison with State-of-the-Art Methods
-
-| Method | Params (M) | FLOPs (G) | Runtime (s) | Platform |
-|:---|---:|---:|---:|:---|
-| LLNet | 17.908 | 4124.177 | 36.270 | Theano |
-| Retinex-Net | 0.555 | 587.470 | 0.120 | TensorFlow |
-| KinD | 8.160 | 574.954 | 0.148 | TensorFlow |
-| EnlightenGAN | 8.637 | 273.240 | 0.008 | PyTorch |
-| Zero-DCE | 0.079 | 84.990 | 0.003 | PyTorch |
-| SCI | 8.620 | 28.510 | 0.012 | PyTorch |
-| SNR-Net | 4.010 | 26.350 | 0.018 | PyTorch |
-| Retinexformer | 1.610 | 15.570 | 0.024 | PyTorch |
-| **PGDB-GAN (Ours)** | **1.320** | **74.200** | **0.003** | PyTorch |
-
-PGDB-GAN achieves a remarkable balance: the most compact parameter count among competitive methods (1.320 M), ultra-fast 3 ms inference matching Zero-DCE speed, while delivering superior restoration quality across all quantitative metrics.
-
----
-
-## Experimental Results
-
-### Quantitative Results on LOL Dataset
-
-| Method | PSNR (dB)↑ | SSIM↑ | NSR↑ | LPIPS↓ | FID↓ | NIQE↓ |
-|:---|---:|---:|---:|---:|---:|---:|
-| Input | 7.773 | 0.181 | 19.41% | 0.562 | 128.54 | 8.72 |
-| KinD++ | 21.314 | 0.812 | 55.83% | 0.207 | 43.26 | 4.48 |
-| SNR-Net | 24.610 | 0.842 | 65.18% | 0.192 | 36.42 | 4.12 |
-| Retinexformer | 25.160 | 0.845 | 68.34% | 0.187 | 33.14 | 3.86 |
-| **PGDB-GAN** | **29.670** | **0.941** | **82.31%** | **0.173** | **22.37** | **3.18** |
-
-### Quantitative Results on DarkFace Dataset
-
-| Method | NSR↑ | LPIPS↓ | FID↓ | NIQE↓ |
-|:---|---:|---:|---:|---:|
-| Input | 36.61% | 0.762 | 143.67 | 9.27 |
-| SCI | 71.24% | 0.385 | 48.92 | 4.89 |
-| SNR-Net | 74.16% | 0.263 | 46.27 | 4.61 |
-| Retinexformer | 76.83% | 0.244 | 41.58 | 4.13 |
-| **PGDB-GAN** | **86.41%** | **0.206** | **25.69** | **3.42** |
-
-### Visual Results
-
-![LOL Results](Visual comparison chart group/Figure9_DarkFace_Results.png)
-
-**Figure 6-8:** Visual comparison on LOL-test datasets. PGDB-GAN consistently recovers finer facial textures and maintains natural color fidelity compared to existing methods.
-
-![DarkFace Results](Visual comparison chart group/Figure10_DarkFace_Results.png)
-
-**Figures 9-11:** Visual comparison on DarkFace datasets. Red bounding boxes indicate successful face detection; PGDB-GAN preserves facial identity features even under extreme low-light conditions.
-
-![Additional Results](Visual comparison chart group/Figure12.png)
-![Additional Results](Visual comparison chart group/Figure13.png)
-![Additional Results](Visual comparison chart group/Figure14.png)
-
-**Figures 12-14:** Additional visual comparisons demonstrating the robustness of PGDB-GAN across diverse lighting conditions.
-
-### Downstream Face Detection Performance
-
-| Method | 1× (Close-up) | 2× (Mid-dist) | 4× (Long-dist) |
-|:---|---:|---:|---:|
-| Input | 0.3313 | 0.3311 | 0.3301 |
-| SCI | 0.9580 | 0.9924 | 0.6348 |
-| SNR-Net | 0.9984 | 0.9871 | 0.6379 |
-| Retinexformer | 0.9268 | 0.9919 | 0.8608 |
-| **PGDB-GAN** | **0.9991** | **0.9984** | **0.9737** |
-
-![Face Detection](Visual comparison chart group/Figure15_Face_Detection.png)
-
-**Figure 15:** Qualitative comparison of downstream face detection performance using MTCNN. PGDB-GAN preserves crucial facial geometric topology even under severe nocturnal degradation.
-
----
-
-## Getting Started
-
-### 1. Environment Setup
+### Command-line Inference
 
 ```bash
-# Clone repository
-git clone https://github.com/mygithub88888888/PGDB-GAN.git
-cd PGDB-GAN
+# Inference on LOL test set
+python scripts/test.py \
+    --data_path_test_low ./data/LOL/test/low/ \
+    --model_test ./weights/LOL.pt \
+    --save ./test_results/LOL/
 
-# Install dependencies
-pip install -r requirements.txt
+# Inference on DarkFace
+python scripts/test.py \
+    --data_path_test_low ./data/DarkFace/test/image/ \
+    --model_test ./weights/L-Nikon.pt \
+    --save ./test_results/DarkFace/
 ```
 
-### 2. Data Preparation
+---
 
-Prepare your dataset in the following structure:
-```
-data/
-├── train/
-│   └── low/          # Low-light training images
-├── test/
-│   └── low/          # Low-light test images
-└── masks/            # (Optional) Face masks for distillation
-```
+## Training
 
-Generate face masks from annotations:
-```bash
-python src/generate_masks.py \
-    --image_dir ./data/train/low \
-    --annotation_dir ./data/annotations \
-    --mask_dir ./data/masks
-```
+The model is trained in a three-stage protocol. All stages use a **fixed random seed of 2** for PyTorch, NumPy, and Python's built-in random module.
 
-### 3. Three-Stage Training
+### Reproducibility Settings
 
-#### Stage 1: Base Model Training
+| Component | Setting |
+|:---|:---|
+| PyTorch seed | `torch.manual_seed(2)` |
+| CUDA seed | `torch.cuda.manual_seed(2)` |
+| NumPy seed | `np.random.seed(2)` |
+| Python random | `random.seed(2)` |
+| cuDNN | `benchmark=True`, `deterministic=False` |
+
+### Stage 1: Physical Foundation + Joint GAN Training
+
+Trains the full PGDB-GAN pipeline end-to-end: LD-Net (denoising), IE-Net (illumination), RD-Net (reflectance), and the dual-branch GAN.
 
 ```bash
 python scripts/train_stage1.py \
     --batch_size 16 \
-    --lr 2e-4 \
     --epochs 3000 \
-    --gpu 0 \
+    --lr 0.0002 \
     --seed 2 \
-    --save ./results/stage1
+    --gpu 0 \
+    --save ./train_results/LOL_results
 ```
 
-#### Stage 2: Face-Aware Knowledge Distillation
+**Key hyperparameters:**
+
+| Parameter | Value |
+|:---|:---|
+| Batch size | 16 |
+| Epochs | 3,000 |
+| Optimizer | Adam (beta1=0.5, beta2=0.999) |
+| Learning rate | 2e-4 |
+| Training patch size | 256 x 256 (random crop) |
+| Random seed | 2 |
+
+### Stage 2: Face-Aware Knowledge Distillation
+
+Transfers texture-critical features from the teacher network to a lightweight student using Gabor-weighted feature alignment.
 
 ```bash
-python src/distillation.py \
-    --teacher_path ./results/stage1/model_epochs/weights_3000.pt \
-    --epochs 10 \
-    --lr 1e-4
+python scripts/train_gan.py \
+    --batch_size 16 \
+    --epochs 5001 \
+    --lr 0.0001 \
+    --seed 2 \
+    --gpu 0 \
+    --model_pretrain ./weights/weights_3000.pt \
+    --mask_dir ./data/DarkFace/train/mask/ \
+    --save ./train_results/GAN_results
 ```
 
-#### Stage 3: Gabor-Driven Structured Pruning
+**Key hyperparameters:**
+
+| Parameter | Value |
+|:---|:---|
+| Iterations | 100,000 |
+| Learning rate | 1e-4 |
+| lambda_distill | 2.0 |
+| lambda_tex (texture preservation) | 0.5 |
+| Gabor orientations | 6 |
+| Gabor frequency bands | 2 |
+
+### Stage 3: Gabor-Driven Structured Pruning
+
+Identifies and removes redundant channels based on Gabor activation sensitivity scores.
 
 ```bash
 python src/pruning.py \
-    --model_path ./checkpoints/student/best.pth \
-    --prune_amount 0.3
+    --model_path ./weights/weights_100000.pt \
+    --pruning_ratio 0.25 \
+    --output_path ./weights/pgdb_gan_pruned.pt
 ```
 
-### 4. Testing & Evaluation
+**Result:** 5.08M to 1.32M parameters (74% reduction), 0.21 dB PSNR trade-off on LOL.
+
+---
+
+## Evaluation
+
+### Image Quality Metrics
+
+All quantitative metrics are computed using a unified evaluation script:
 
 ```bash
 python scripts/test.py \
-    --data_path_test_low ./data/test/low \
-    --model_test ./weights/LOL.pt \
-    --save ./results/test \
-    --gpu 0
+    --data_path_test_low <path_to_test_images> \
+    --model_test <path_to_checkpoint> \
+    --save <output_directory>
 ```
 
-### 5. Reproducing Paper Results
+**Metrics computed:** PSNR, SSIM, LPIPS, FID, NIQE, NSR, MSE
 
-To fully reproduce the experimental results reported in the paper:
+**Metric computation protocols (DarkFace --- unpaired):**
 
-1. Download datasets: [LOL](https://daooshee.github.io/BMVC2018website/), [DarkFace](https://flyywh.github.io/CVPRW2019LowLight/), [MIT-Adobe FiveK](https://data.csail.mit.edu/graphics/fivek/)
-2. Train Stage 1 on LOL dataset (~3000 epochs, ~8 hours on RTX 4060 Ti)
-3. Distill with face masks (~10 epochs, ~2 hours)
-4. Apply structured pruning (post-processing)
-5. Evaluate using provided test scripts
+| Metric | Protocol |
+|:---|:---|
+| LPIPS | AlexNet-based, enhanced output vs. original low-light input |
+| FID | Inception-v3 (pool3), images resized to 299x299, reference = original low-light test set |
+| NSR | Wavelet-domain MAD estimator (Daubechies-4, sigma = MAD/0.6745), NSR = (sigma_input - sigma_enhanced) / sigma_input x 100% |
+| NIQE | Standard implementation with default parameters |
+
+For paired datasets (LOL, MIT-Adobe FiveK), all reference-based metrics use the corresponding ground-truth normal-light images.
+
+### Downstream Face Detection
+
+```bash
+# MTCNN face detection benchmark at multiple scales
+python scripts/test.py \
+    --data_path_test_low ./data/DarkFace/test/image/ \
+    --model_test ./weights/L-Nikon.pt \
+    --detection_scale 1.0 2.0 4.0 \
+    --save ./test_results/detection/
+```
+
+---
+
+## Training Configuration Summary
+
+### Loss Function Weights
+
+| Loss Term | Symbol | Weight | Purpose |
+|:---|:---|:---|:---|
+| Illumination consistency | lambda_light | 1.0 | Global brightness matching |
+| Content reconstruction | lambda_content | 10.0 | L1 pixel-level fidelity |
+| Face-aware distillation | lambda_distill | 2.0 | Gabor-weighted teacher-student alignment |
+| Texture preservation | lambda_tex | 0.5 | Post-pruning texture retention |
+| Adversarial | lambda_adv | 1.0 | Perceptual realism via PatchGAN |
+
+### Physical Prior Constants
+
+| Constant | Value | Description |
+|:---|:---|:---|
+| alpha | 0.5 | Brightness scaling coefficient (adaptive) |
+| beta | 0.8--1.2 | Per-pixel adaptive adjustment ratio |
+| gamma | 0.9 | Contrast adjustment coefficient |
+| E | 0.7 | Empirical intensity threshold |
+
+---
+
+## Efficiency
+
+| Metric | Value | Platform |
+|:---|---:|:---|
+| Parameters (pruned) | **1.320 M** | PyTorch |
+| FLOPs | 74.200 G | PyTorch |
+| Inference time (720P) | **3 ms** (0.003 s) | NVIDIA RTX 4060 Ti |
+| Model size (pruned) | 1.32 MB | --- |
+| Compression ratio | 74% (5.08M to 1.32M) | --- |
+
+> **Note on cross-platform comparison:** Runtime values reported in the full manuscript comparison table are measured in each method's original implementation framework (PyTorch, TensorFlow, Theano, MATLAB). Direct cross-platform runtime comparisons should be interpreted with caution. The framework-agnostic metrics (parameter count and FLOPs) provide a more reliable basis for cross-method efficiency assessment.
 
 ---
 
@@ -441,44 +389,23 @@ To fully reproduce the experimental results reported in the paper:
 
 This project is released under the [MIT License](LICENSE).
 
----
-
 ## Citation
 
-If you find our work helpful in your research, please cite:
+If you find this work useful in your research, please cite:
 
 ```bibtex
-@article{tao2026pgdb,
-  title={PGDB-GAN: A Dynamic Enhancement Method for Low-Light Facial Features through Synergy of Physical Illumination and Adversarial Learning},
-  author={Yan, Xianglong and Tao, Jin},
-  journal={Applied Soft Computing},
-  year={2026},
-  publisher={Elsevier},
-  doi={10.1016/j.asoc.2026.xxxxx}
+@article{yan2025pgdbgan,
+  title     = {{PGDB-GAN}: A Dynamic Enhancement Method for Low-Light Facial Features
+               through Synergy of Physical Illumination and Adversarial Learning},
+  author    = {Yan, Xianglong and Tao, Jin},
+  journal   = {Applied Soft Computing},
+  year      = {2025},
+  note      = {Under review}
 }
 ```
 
----
-
-## Acknowledgments
-
-This work was supported by the School of Artificial Intelligence, Gansu University of Political Science and Law. The authors thank the anonymous reviewers for their constructive feedback that significantly improved this work.
-
----
-
 ## Contact
 
-For questions regarding the implementation or the paper:
-
-- **Xianglong Yan** — School of Artificial Intelligence, Gansu University of Political Science and Law
-- **Jin Tao** — 359071039@qq.com
-
-Please open an [issue](https://github.com/mygithub88888888/PGDB-GAN/issues) for code-related questions.
-
----
-
-## Changelog
-
-| Version | Date | Description |
-|:---|:---|:---|
-| v1.0.0 | 2026-06 | Initial release: clean codebase, pre-trained weights, comprehensive documentation |
+For questions or collaborations, please contact:
+- Xianglong Yan: 17393335628@163.com
+- Jin Tao: 359071039@qq.com
