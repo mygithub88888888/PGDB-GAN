@@ -256,7 +256,7 @@ def main():
     best_psnr = float('-inf')
     lambda_distill = 0.7
     lambda_gan = 0.1
-    lambda_gabor = 0.5
+    lambda_gabor = 5.0
 
     scaler = torch.cuda.amp.GradScaler()
 
