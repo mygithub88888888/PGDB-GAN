@@ -1,4 +1,4 @@
-# PGDB-GAN: A Dynamic Enhancement Method for Low-Light Facial Features through Synergy of Physical Illumination and Adversarial Learning
+﻿# PGDB-GAN: A Dynamic Enhancement Method for Low-Light Facial Features through Synergy of Physical Illumination and Adversarial Learning
 
 **Official PyTorch Implementation**
 
@@ -79,6 +79,10 @@ PGDB-GAN/
 │   ├── identity_fidelity.py       # Experiment (1): DarkFace identity fidelity
 │   ├── lfw_dark_biometric.py      # Experiments (2)/(3): LFW recognition + verification
 │   ├── README_biometric.md        # Biometric protocol, commands, released results
+│   ├── metrics.py                # Unified metric protocols (NSR/LPIPS/FID/NIQE)
+│   ├── make_splits.py            # Generates the six split manifests in splits/
+│   ├── run_five_seeds.py         # Five-seed batch runner (seeds 2,7,42,123,2024)
+│   ├── validate_identity.py      # Identity preservation / verification / recognition
 │   └── results/                   # Biometric result CSVs + per-run config JSONs
 ├── configs/                      # Configuration files
 ├── data/                         # Sample preprocessed training data
@@ -101,6 +105,10 @@ PGDB-GAN/
 │   ├── lol.csv                   # Table 4 (LOL)
 │   ├── darkface.csv              # Table 5 (DarkFace)
 │   └── fivek.csv                 # Table 9 (MIT-Adobe FiveK)
+├── splits/                       # File-level split manifests (Section 4.1)
+│   ├── DarkFace_train.txt        # 6,000-image subject-disjoint train set
+│   ├── DarkFace_test.txt         # 415-image subject-disjoint test set
+│   └── README.md                 # Manifest documentation + generation guide
 ├── requirements.txt              # Python dependencies
 ├── README.md                     # This file
 └── LICENSE                       # MIT License
@@ -164,6 +172,8 @@ data/DarkFace/
     ├── image/        # Low-light testing images
     └── label/        # Bounding box annotations
 ```
+
+File-level split manifests are published in `splits/`: the two DarkFace manifests (6,000 training images / 415 test images, subject-disjoint) are shipped in this repository, and the LOL and MIT-Adobe FiveK manifests (485/15 and 4,500/500, the standard public splits) are generated with `python scripts/make_splits.py --data_root ./data` from the official downloads.
 
 ### Preprocessing
 
@@ -592,7 +602,7 @@ To fully reproduce the experimental results reported in the paper:
 |:---|:---|
 | Repository | https://github.com/mygithub88888888/PGDB-GAN |
 | Default branch | `main` |
-| Release commit (tag `v1.0.0`) | `3324abb30122d57f33c2399fc4ed9ebae231e96a` |
+| Release commit (tag `v1.0.0`) | (pinned to the commit containing all reproducibility artifacts; the concrete hash is recorded on the main-branch README) |
 | Release tag | `v1.0.0` (attached to the commit above) |
 
 > The release commit contains the complete v1.0.0 source code, pre-trained weights (`weights/`), result CSVs (Tables 4, 5, 9), the biometric evaluation files (`scripts/results/` and the `*biometric*` scripts), and `scripts/eval_baselines.sh`. Subsequent commits on `main` after the release commit are documentation-only README updates; `git rev-list -n 1 v1.0.0` returns the release hash recorded on the main-branch README.
@@ -683,7 +693,7 @@ The exact numbers reported in Tables 4, 5 and 9 of the paper are published as CS
 
 **DarkFace identity baseline note (Table 5):** the `input` row is the identity baseline. Under the DarkFace protocols (LPIPS vs. the low-light input, FID with the low-light test set as reference, NSR = (sigma_input - sigma_enhanced)/sigma_input), NSR, LPIPS and FID of the identity mapping are **exactly zero by construction** (`0.00% / 0.000 / 0.00`). The row is reported as a zero-reference self-check of the evaluation pipeline and is excluded from the method ranking; NIQE (9.27) is the absolute no-reference quality of the raw input.
 
-### Biometric evaluation files (Reviewer #3: recognition, verification, identity preservation)
+### Biometric evaluation files (recognition, verification, identity preservation)
 
 The controlled low-light biometric benchmark reported in the paper (LFW View-2 fold 1: 300 genuine / 300 impostor pairs; ArcFace `w600k_r50` embeddings; landmarks detected on the normal-light counterpart and reused across all conditions; DarkFace identity fidelity with the low-light input as reference) is released as:
 
@@ -713,6 +723,7 @@ Every item above can be confirmed without re-running any training:
  the exact per-baseline evaluation commands
 
 7. Compare `scripts/results/biometric_identity_fidelity.csv`, `biometric_recognition_lfw.csv` and `biometric_verification_lfw.csv` with the biometric evaluation table in the paper
+8. Confirm the split manifests: `splits/DarkFace_train.txt` (6,000 lines) and `splits/DarkFace_test.txt` (415 lines); regenerate the LOL/FiveK manifests with `scripts/make_splits.py`
 
 ---
 
@@ -760,6 +771,7 @@ Please open an [issue](https://github.com/mygithub88888888/PGDB-GAN/issues) for 
 
 | Version | Date | Description |
 |:---|:---|:---|
-| v1.0.0 | 2026-08-21 | Initial release: clean codebase, pre-trained weights, comprehensive documentation, and the complete reproducibility record (baseline pins, result CSVs, biometric evaluation files for Reviewer #3) |
+| v1.0.0 | 2026-08-21 | Initial release: clean codebase, pre-trained weights, comprehensive documentation, and the complete reproducibility record (baseline pins, result CSVs, biometric evaluation files) |
+
 
 
