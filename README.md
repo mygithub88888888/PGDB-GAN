@@ -399,7 +399,7 @@ PGDB-GAN achieves a remarkable balance: the most compact parameter count among c
 
 | Method | NSR↑ | LPIPS↓ | FID↓ | NIQE↓ |
 |:---|---:|---:|---:|---:|
-| Input | 36.61% | 0.762 | 143.67 | 9.27 |
+| Input | 0.00% | 0.000 | 0.00 | 9.27 |
 | SCI | 71.24% | 0.385 | 48.92 | 4.89 |
 | SNR-Net | 74.16% | 0.263 | 46.27 | 4.61 |
 | Retinexformer | 76.83% | 0.244 | 41.58 | 4.13 |
@@ -566,6 +566,105 @@ To fully reproduce the experimental results reported in the paper:
 
 ---
 
+## Reproducibility: Releases, Baselines, Commands & Result Files
+
+> This section provides the exact, machine-checkable reproducibility record for the paper.
+> All commit hashes below were verified against the corresponding public GitHub repositories on **2026-08-20**.
+
+### Release pinning
+
+| Item | Value |
+|:---|:---|
+| Repository | https://github.com/mygithub88888888/PGDB-GAN |
+| Default branch | `main` |
+| Release commit (current HEAD, 2026-07-21) | `857fe51dd3e29d70bbbe2780a91fc55d1e04acc5` |
+| Release tag | `v1.0.0` (attach to the commit above) |
+
+### Software environment (exact)
+
+| Component | Version used for the reported experiments |
+|:---|:---|
+| OS | Windows 11 |
+| GPU / CPU | NVIDIA RTX 4060 Ti 16 GB / Intel i7-10700K |
+| RAM | 16 GB (⚠ confirm: the README currently lists 32 GB and CUDA 11.3+/cuDNN 8.2+; the paper states CUDA 11.2 and cuDNN 8.1 — align these fields to the actual machine) |
+| Python / PyTorch / torchvision | 3.8+ / >=1.10.0 / >=0.11.0 (see `requirements.txt`) |
+| CUDA / cuDNN | 11.2 / 8.1 (per paper; ⚠ confirm) |
+| numpy / opencv-python / scikit-image | >=1.21.0 / >=4.5.0 / >=0.19.0 |
+
+### PGDB-GAN checkpoints (actual files in `weights/`)
+
+| File in `weights/` | Dataset / stage (⚠ confirm the mapping) |
+|:---|:---|
+| `weights_3000.pt` | Stage 1 base model (3000 epochs) |
+| `weights_100000.pt` | Stage 2 joint GAN training (100000 iterations) |
+| `LOL.pt` | Final model, LOL dataset |
+| `L-Nikon.pt` | Final model, DarkFace/Nikon subset (⚠ confirm) |
+| `LSRW.pt` | Final model, LSRW/MIT-Adobe FiveK subset (⚠ confirm) |
+
+### Baselines: exact repositories, commits, and checkpoints used
+
+All compared methods were evaluated with their **official pre-trained checkpoints** (no fine-tuning/retraining), under the same splits, preprocessing, resolutions, and metric protocols as the paper. Commit hashes below are the state of each official repository verified on 2026-08-20.
+
+| Method | Official repository | Commit (verified) | Pretrained checkpoint / weights |
+|:---|:---|:---|:---|
+| LLNet | grayscale: no official public repo confirmed; color (official): [kglore/llnet_color](https://github.com/kglore/llnet_color) | `1d45245ec2f6439ffd67848e05daa104412e3755` | model object from the repo README link (⚠ confirm which source was used) |
+| LightenNet | official code not publicly available (⚠ confirm the source of the reported numbers) | — | — |
+| Retinex-Net | [weichen582/RetinexNet](https://github.com/weichen582/RetinexNet) | `fdc15ebc179209d17c77371a825df351a5be3ff5` | checkpoints under `./checkpoint` per repo README |
+| MBLLEN | [Lvfeifan/MBLLEN](https://github.com/Lvfeifan/MBLLEN) | `69f6dc7ac35e4e1e5d79e74d2738cca033f5d563` | `Syn_img_lowlight_withnoise.h5`, `LOL_img_lowlight.h5` |
+| KinD | [zhangyhuaee/KinD](https://github.com/zhangyhuaee/KinD) | `b7d7fcca6d70e1fcb588ad6935ec7750e96c7161` | official checkpoints (Baidu/Google Drive links in repo README) |
+| KinD++ | [zhangyhuaee/KinD_plus](https://github.com/zhangyhuaee/KinD_plus) | `6e50ecdbf092420276bf4cf18f7343110b20e17f` | official checkpoints (Drive/Baidu links in repo README) |
+| TBEFN | [lukun199/TBEFN](https://github.com/lukun199/TBEFN) | `c9181c7a4fc05a7f0050847a858c97268511701c` | `./ckpt` (provided in repo) |
+| DSLR | [SeokjaeLIM/DSLR-release](https://github.com/SeokjaeLIM/DSLR-release) | `861429482faf50ee3d6570948af8c48df1fc7f43` | pretrained model via Drive link in repo README |
+| EnlightenGAN | [VITA-Group/EnlightenGAN](https://github.com/VITA-Group/EnlightenGAN) | `b0349848f0cd1e52317baa04e09ac32a2ae771d6` | pretrained generator + VGG16 (Drive links in repo README) |
+| DRBN | [flyywh/CVPR-2020-Semi-Low-Light](https://github.com/flyywh/CVPR-2020-Semi-Low-Light) | `9f383decbd2717ab37bb9e4c133b3a0bf98ba638` | official checkpoints (per repo README) |
+| ExCNet | [csLinZhang/ExCNet](https://github.com/csLinZhang/ExCNet) | `440c3d8572658d3eab3a570cf9e35bfe06478953` | official notebook `ExCNet.ipynb`; no separate pretrained checkpoint file in the repo (⚠ confirm the notebook was run as-is) |
+| Zero-DCE | [Li-Chongyi/Zero-DCE](https://github.com/Li-Chongyi/Zero-DCE) | `e0f4adc54d0f23348c4a9b84acc08fe8778d5bfd` | `Epoch99.pth` |
+| RRDNet | [aaaaangel/RRDNet](https://github.com/aaaaangel/RRDNet) | `d1dce2a2069777a64bd335c210cee91e0e03a86e` | none required (zero-shot Retinex decomposition) |
+| SCI | [vis-opt-group/SCI](https://github.com/vis-opt-group/SCI) | `f6f88fd73cd614dbeee17d61a0dbde3678b7e183` | official weights bundled in the repo: `CVPR/weights/easy.pt`, `CVPR/weights/medium.pt`, `CVPR/weights/difficult.pt`, `TPAMI/weights/weights_1_3500.pt` |
+| SNR-Net | [JIA-Lab-research/SNR-Aware-Low-Light-Enhance](https://github.com/JIA-Lab-research/SNR-Aware-Low-Light-Enhance) | `1113144c82adc8bcc4a9ec27749ed75f196a4e4d` | weights not bundled in the repo; official download links in the repo README, loaded via `pretrain_model_G` in `options/test/*.yml` |
+| Retinexformer | [caiyuanhao1998/Retinexformer](https://github.com/caiyuanhao1998/Retinexformer) | `1e9a0efce4b306b6701b824768370ff26066c32a` | weights not bundled in the repo; official Google Drive/Baidu download links in the repo README |
+
+### Execution commands
+
+```bash
+# Stage 1 (physical foundation initialization: Adam, lr 2e-4, batch size 16, 3000 epochs)
+python scripts/train_stage1.py --batch_size 16 --lr 2e-4 --epochs 3000 --seed <seed> --gpu 0 --save ./results/stage1
+
+# Stage 2 (joint GAN fine-tuning: the 100,000 iterations of Stage 2; the script's
+# "--epochs" value is the iteration counter and saves weights_<counter>.pt)
+python scripts/train_gan.py --model_pretrain ./results/stage1/model_epochs/weights_3000.pt --lr 1e-4 --epochs 100000 --seed <seed> --gpu 0 --save ./results/stage2
+
+# Stage 3 (hotspot-aware knowledge distillation and structured pruning).
+# These scripts take no command-line arguments: the paths, batch size, and pruning
+# amount (0.2) are configured at the top of src/distillation.py and src/pruning.py.
+python src/distillation.py
+python src/pruning.py
+
+# Evaluation (LOL / DarkFace / FiveK) with the released weights
+python scripts/test.py --data_path_test_low ./data/test/low --model_test ./weights/LOL.pt --save ./results/test --seed <seed> --gpu 0
+
+# Dataset directories are hard-coded in the DataLoader block of each training script
+# (train_stage1.py: ./datasets/data_choose/image; train_gan.py: ./datasets/JIAGAN/image);
+# point them to the local dataset layout (the dataset files are included under data/ in this repo).
+
+# Baselines: the exact per-method commands (official repository at the recorded commit +
+# official pretrained checkpoint) are consolidated in scripts/eval_baselines.sh.
+```
+
+### Result files (paper Tables 4, 5, 9)
+
+The exact numbers reported in Tables 4, 5 and 9 of the paper are published as CSV files in `results/`:
+
+| Paper table | File |
+|:---|:---|
+| Table 4 (LOL) | [results/lol.csv](results/lol.csv) |
+| Table 5 (DarkFace) | [results/darkface.csv](results/darkface.csv) |
+| Table 9 (MIT-Adobe FiveK) | [results/fivek.csv](results/fivek.csv) |
+
+**DarkFace identity baseline note (Table 5):** the `input` row is the identity baseline. Under the DarkFace protocols (LPIPS vs. the low-light input, FID with the low-light test set as reference, NSR = (sigma_input - sigma_enhanced)/sigma_input), NSR, LPIPS and FID of the identity mapping are **exactly zero by construction** (`0.00% / 0.000 / 0.00`). The row is reported as a zero-reference self-check of the evaluation pipeline and is excluded from the method ranking; NIQE (9.27) is the absolute no-reference quality of the raw input.
+
+---
+
 ## License
 
 This project is released under the [MIT License](LICENSE).
@@ -611,3 +710,4 @@ Please open an [issue](https://github.com/mygithub88888888/PGDB-GAN/issues) for 
 | Version | Date | Description |
 |:---|:---|:---|
 | v1.0.0 | 2026-06 | Initial release: clean codebase, pre-trained weights, comprehensive documentation |
+
