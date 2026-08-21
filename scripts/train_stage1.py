@@ -16,12 +16,12 @@ from dataset import DataLoader
 
 
 parser = argparse.ArgumentParser("ZERO-IG")
-parser.add_argument('--batch_size', type=int, default=1, help='batch size')
+parser.add_argument('--batch_size', type=int, default=16, help='batch size')
 parser.add_argument('--cuda', default=True, type=bool, help='Use CUDA to train model')
 parser.add_argument('--gpu', type=str, default='0', help='gpu device id')
 parser.add_argument('--seed', type=int, default=2, help='random seed')
-parser.add_argument('--epochs', type=int, default=2001, help='epochs')
-parser.add_argument('--lr', type=float, default=0.0003, help='learning rate')
+parser.add_argument('--epochs', type=int, default=3000, help='epochs')
+parser.add_argument('--lr', type=float, default=0.0002, help='learning rate')
 parser.add_argument('--save', type=str, default='./train_results/LOL_results', help='location of the data corpus')
 parser.add_argument('--model_pretrain', type=str, default='', help='location of the data corpus')
 
