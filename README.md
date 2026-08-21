@@ -592,7 +592,7 @@ To fully reproduce the experimental results reported in the paper:
 |:---|:---|
 | Repository | https://github.com/mygithub88888888/PGDB-GAN |
 | Default branch | `main` |
-| Release commit (tag `v1.0.0`) | (pinned to the commit containing all reproducibility artifacts; the concrete hash is recorded on the main-branch README) |
+| Release commit (tag `v1.0.0`) | `3324abb30122d57f33c2399fc4ed9ebae231e96a` |
 | Release tag | `v1.0.0` (attached to the commit above) |
 
 > The release commit contains the complete v1.0.0 source code, pre-trained weights (`weights/`), result CSVs (Tables 4, 5, 9), the biometric evaluation files (`scripts/results/` and the `*biometric*` scripts), and `scripts/eval_baselines.sh`. Subsequent commits on `main` after the release commit are documentation-only README updates; `git rev-list -n 1 v1.0.0` returns the release hash recorded on the main-branch README.
