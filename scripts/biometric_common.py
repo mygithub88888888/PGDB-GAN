@@ -1,4 +1,4 @@
-"""Shared helpers for the Reviewer-#3 biometric evaluation scripts.
+"""Shared helpers for the downstream biometric evaluation scripts.
 
 Pipeline: image -> face detection -> 112x112 aligned crop -> ArcFace
 embedding -> cosine statistics / rank / TAR@FAR.
