@@ -1,4 +1,4 @@
-# Biometric Evaluation Scripts - Reviewer #3 Comment 3 (Experiments 1-3)
+# Biometric Evaluation Scripts (Experiments 1-3)
 
 Two entry scripts plus one shared module (`biometric_common.py`):
 
