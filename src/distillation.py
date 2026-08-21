@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from model111 import Network, Discriminator
-from read111 import DataLoader
+from model_gan import Network, Discriminator
+from dataset import DataLoader
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import mean_squared_error
