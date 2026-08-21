@@ -1,0 +1,6 @@
+method,pairs,mean_cosine,std_cosine
+input,415,1.000000,0.000000
+SCI,415,0.656121,0.309547
+SNR-Net,415,0.603000,
+Retinexformer,415,0.583490,0.288983
+PGDB-GAN,415,0.543420,0.291552
