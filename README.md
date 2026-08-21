@@ -577,8 +577,10 @@ To fully reproduce the experimental results reported in the paper:
 |:---|:---|
 | Repository | https://github.com/mygithub88888888/PGDB-GAN |
 | Default branch | `main` |
-| Release commit (current HEAD, 2026-07-21) | `857fe51dd3e29d70bbbe2780a91fc55d1e04acc5` |
-| Release tag | `v1.0.0` (attach to the commit above) |
+| Release commit (tag `v1.0.0`) | `d58ac7fd6b97cdcd8785f57996b822926e2a65c6` |
+| Release tag | `v1.0.0` (attached to the commit above) |
+
+> The release commit contains the complete v1.0.0 source code, pre-trained weights (`weights/`), result CSVs (Tables 4, 5, 9), and `scripts/eval_baselines.sh`. The README release-pinning update is a documentation-only commit layered on top of the release commit; `git rev-list -n 1 v1.0.0` returns the hash above.
 
 ### Software environment (exact)
 
@@ -709,5 +711,5 @@ Please open an [issue](https://github.com/mygithub88888888/PGDB-GAN/issues) for 
 
 | Version | Date | Description |
 |:---|:---|:---|
-| v1.0.0 | 2026-06 | Initial release: clean codebase, pre-trained weights, comprehensive documentation |
+| v1.0.0 | 2026-08-21 | Initial release: clean codebase, pre-trained weights, comprehensive documentation |
 
