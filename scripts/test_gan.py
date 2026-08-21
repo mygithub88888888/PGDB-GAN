@@ -1,5 +1,6 @@
 import os
 import sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
 import numpy as np
 import torch
 import argparse
@@ -7,10 +8,10 @@ import logging
 import torch.utils
 from PIL import Image
 from torch.autograd import Variable
-from model111 import Finetunemodel
-from read111 import DataLoader
+from model_gan import Finetunemodel
+from dataset import DataLoader
 from thop import profile
-from utilspro import load_face_mask
+from utils_gan import load_face_mask
 
 root_dir = os.path.abspath('./')
 sys.path.append(root_dir)
@@ -78,8 +79,8 @@ def main():
 
     with torch.no_grad():
         for _, (input, img_name, _) in enumerate(test_queue):
-            input = Variable(input, volatile=True).cuda()
-            input_name = img_name[0].split('/')[-1].split('.')[0]
+            input = input.cuda()
+            input_name = os.path.splitext(os.path.basename(img_name[0]))[0]
 
             image_size = (input.shape[2], input.shape[3])
             face_mask = load_face_mask(input_name + '.png', mask_dir, image_size).cuda()
