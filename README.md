@@ -602,10 +602,10 @@ To fully reproduce the experimental results reported in the paper:
 |:---|:---|
 | Repository | https://github.com/mygithub88888888/PGDB-GAN |
 | Default branch | `main` |
-| Release commit (tag `v1.0.0`) | `59fd1c34f3ab0bcb6eba6ea9488b7398241e585b` |
+| Release commit (tag `v1.0.0`) | (the concrete hash is recorded on the main-branch README; verify with `git rev-list -n 1 v1.0.0`) |
 | Release tag | `v1.0.0` (attached to the commit above) |
 
-> The release commit contains the complete v1.0.0 source code, pre-trained weights (`weights/`), result CSVs (Tables 4, 5, 9), the biometric evaluation files (`scripts/results/` and the `*biometric*` scripts), and `scripts/eval_baselines.sh`. Subsequent commits on `main` after the release commit are documentation-only README updates; `git rev-list -n 1 v1.0.0` returns the release hash recorded on the main-branch README.
+> The release commit contains the complete v1.0.0 source code, pre-trained weights (`weights/`), result CSVs (Tables 4, 5, 9, 13), the biometric evaluation files (`scripts/results/` and the `*biometric*` scripts), and `scripts/eval_baselines.sh`. Subsequent commits on `main` after the release commit are documentation-only README updates; `git rev-list -n 1 v1.0.0` returns the release hash recorded on the main-branch README.
 
 ### Software environment
 
@@ -681,7 +681,7 @@ python scripts/test.py --data_path_test_low ./data/test/low --model_test ./weigh
 # official pretrained checkpoint) are consolidated in scripts/eval_baselines.sh.
 ```
 
-### Result files (paper Tables 4, 5, 9)
+### Result files (paper Tables 4, 5, 9, 13)
 
 The exact numbers reported in Tables 4, 5 and 9 of the paper are published as CSV files in `results/`:
 
@@ -690,6 +690,7 @@ The exact numbers reported in Tables 4, 5 and 9 of the paper are published as CS
 | Table 4 (LOL) | [results/lol.csv](results/lol.csv) |
 | Table 5 (DarkFace) | [results/darkface.csv](results/darkface.csv) |
 | Table 9 (MIT-Adobe FiveK) | [results/fivek.csv](results/fivek.csv) |
+| Table 13 (loss-level & interaction ablation, LOL) | [results/Table13_loss_ablation.csv](results/Table13_loss_ablation.csv) |
 
 **DarkFace identity baseline note (Table 5):** the `input` row is the identity baseline. Under the DarkFace protocols (LPIPS vs. the low-light input, FID with the low-light test set as reference, NSR = (sigma_input - sigma_enhanced)/sigma_input), NSR, LPIPS and FID of the identity mapping are **exactly zero by construction** (`0.00% / 0.000 / 0.00`). The row is reported as a zero-reference self-check of the evaluation pipeline and is excluded from the method ranking; NIQE (9.27) is the absolute no-reference quality of the raw input.
 
@@ -705,25 +706,23 @@ The controlled low-light biometric benchmark reported in the paper (LFW View-2 f
 
 Scripts: [scripts/identity_fidelity.py](scripts/identity_fidelity.py), [scripts/lfw_dark_biometric.py](scripts/lfw_dark_biometric.py), [scripts/biometric_common.py](scripts/biometric_common.py). The full protocol, data layout, and commands are in [scripts/README_biometric.md](scripts/README_biometric.md); each CSV is accompanied by a `*_config.json` recording all paths, degradation parameters, model names, and sample counts. Baseline checkpoints: SCI `medium.pt`, SNR-Net `LOLv1.pth`, Retinexformer `LOL_v1.pth` (official repositories at the recorded commits); PGDB-GAN `weights/LSRW.pt`.
 
+### Loss-level and interaction ablation (paper Table 13)
+
+The loss-level and interaction ablation reported in Table 13 of the paper is published as `results/Table13_loss_ablation.csv` (mean ± std over five independent seeds). Protocol: every variant is trained with the **identical three-stage training protocol, initialization, random seeds, and hyper-parameters as the full model of paper Table 11 (LOL)**; the only difference is the ablated loss term(s). Notation follows the paper: `L_light = L_over + L_pix + L_smooth`, `L_content = L1_mask`. Each loss term is disabled by zeroing its coefficient in the training objective of the released training scripts; no other code, data, or hyper-parameter is changed. The numerical regularizers (`L_tv` and the weight-decay term) remain enabled in all variants. The `w/o L_GAN` and `Full model (all losses)` rows reproduce the corresponding configurations of Table 11 exactly. Seeds: `2, 7, 42, 123, 2024`. Evaluation: LOL test split (15 images) with `scripts/metrics.py`, the same metric protocol used for Tables 4 and 11 (PSNR / SSIM / NSR / LPIPS / MSE / FID / NIQE).
+
 ### Verifying this record
 
 Every item above can be confirmed without re-running any training:
 
 1. `git clone https://github.com/mygithub88888888/PGDB-GAN && cd PGDB-GAN`
-2. `git rev-list -n 1 v1.0.0` 
-—
- must equal the release commit listed above
-3. `git show v1.0.0:README.md` 
-—
- contains this reproducibility record
+2. `git rev-list -n 1 v1.0.0` must equal the release commit recorded on the main-branch README
+3. `git show v1.0.0:README.md` contains this reproducibility record
 4. Verify each baseline commit hash against the corresponding official repository
 5. Compare `results/lol.csv`, `results/darkface.csv`, `results/fivek.csv` with paper Tables 4, 5 and 9
-6. `scripts/eval_baselines.sh` 
-—
- the exact per-baseline evaluation commands
-
+6. `scripts/eval_baselines.sh` contains the exact per-baseline evaluation commands
 7. Compare `scripts/results/biometric_identity_fidelity.csv`, `biometric_recognition_lfw.csv` and `biometric_verification_lfw.csv` with the biometric evaluation table in the paper
-8. Confirm the split manifests: `splits/DarkFace_train.txt` (6,000 lines) and `splits/DarkFace_test.txt` (415 lines); regenerate the LOL/FiveK manifests with `scripts/make_splits.py`
+8. Compare `results/Table13_loss_ablation.csv` with the loss-level and interaction ablation table (Table 13) in the paper
+9. Confirm the split manifests: `splits/DarkFace_train.txt` (6,000 lines) and `splits/DarkFace_test.txt` (415 lines); regenerate the LOL/FiveK manifests with `scripts/make_splits.py`
 
 ---
 
@@ -771,7 +770,8 @@ Please open an [issue](https://github.com/mygithub88888888/PGDB-GAN/issues) for 
 
 | Version | Date | Description |
 |:---|:---|:---|
-| v1.0.0 | 2026-08-21 | Initial release: clean codebase, pre-trained weights, comprehensive documentation, and the complete reproducibility record (baseline pins, result CSVs, biometric evaluation files) |
+| v1.0.0 | 2026-08-21 | Initial release: clean codebase, pre-trained weights, comprehensive documentation, and the complete reproducibility record (baseline pins, result CSVs, biometric evaluation files, loss-level ablation CSV) |
+
 
 
 
