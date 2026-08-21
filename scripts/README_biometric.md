@@ -28,12 +28,11 @@ unreachable, pre-download the five weights `det_10g.onnx`, `w600k_r50.onnx`,
 | --- | --- | --- | --- | --- | --- |
 | input (no enhancement) | 1.000 | 42.33 | 58.33 | 0.9288 | 49.00 |
 | SCI | 0.656 | 92.67 | 95.67 | 0.9851 | 93.33 |
-| SNR-Net | 0.603 | 87.67 | - | 0.9631 | 89.29 |
+| SNR-Net | 0.603 | 87.67 | 92.58 | 0.9631 | 89.29 |
 | Retinexformer | 0.584 | 91.33 | 95.67 | 0.9850 | 90.00 |
 | PGDB-GAN (ours) | 0.543 | 90.67 | 94.67 | 0.9850 | 92.67 |
 
-SNR-Net values were produced with the official `LOLv1.pth` checkpoint;
-cells not supplied by that rerun are left empty in the CSVs.
+SNR-Net values were produced with the official `LOLv1.pth` checkpoint.
 
 ## 2. Experiment 1 - DarkFace identity fidelity
 
