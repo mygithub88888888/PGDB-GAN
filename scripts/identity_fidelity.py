@@ -1,4 +1,4 @@
-"""Experiment 1 - Identity-preservation fidelity (Reviewer #3).
+"""Experiment 1 - Identity-preservation fidelity.
 
 ArcFace cosine similarity between the original and the enhanced image,
 reported per method as mean +/- std.
