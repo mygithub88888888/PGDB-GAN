@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================================
-# PGDB-GAN - Per-baseline evaluation manifest (Reviewer #3 reproducibility)
+# PGDB-GAN - Per-baseline evaluation manifest (reproducibility record)
 #
 # This file consolidates the evaluation entry points of every baseline method
 # used in the paper, pinned to the exact official repository commit and the
