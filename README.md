@@ -602,7 +602,7 @@ To fully reproduce the experimental results reported in the paper:
 |:---|:---|
 | Repository | https://github.com/mygithub88888888/PGDB-GAN |
 | Default branch | `main` |
-| Release commit (tag `v1.0.0`) | `755611acf2ed6a4b997f1bf9da3d2e990a261aae` |
+| Release commit (tag `v1.0.0`) | (the concrete hash is recorded on the main-branch README; verify with `git rev-list -n 1 v1.0.0`) |
 | Release tag | `v1.0.0` (attached to the commit above) |
 
 > The release commit contains the complete v1.0.0 source code, pre-trained weights (`weights/`), result CSVs (Tables 4, 5, 9, 13), the biometric evaluation files (`scripts/results/` and the `*biometric*` scripts), and `scripts/eval_baselines.sh`. Subsequent commits on `main` after the release commit are documentation-only README updates; `git rev-list -n 1 v1.0.0` returns the release hash recorded on the main-branch README.
@@ -618,6 +618,21 @@ To fully reproduce the experimental results reported in the paper:
 | Python / PyTorch / torchvision | PyTorch with CUDA 11.2 and cuDNN 8.1; requirement range Python 3.8+ / PyTorch 1.10+ / torchvision 0.11+ (`requirements.txt`) |
 | CUDA / cuDNN | 11.2 / 8.1 |
 | numpy / opencv-python / scikit-image | >=1.21.0 / >=4.5.0 / >=0.19.0 |
+
+### Hyper-parameter mapping (paper symbols ↔ released code)
+
+The loss hyper-parameters reported in the paper (Section 3 equations and Table 2) map to the released code as follows (values follow the paper; the code was aligned to them):
+
+| Paper symbol | Value | Released code location |
+|:---|:---|:---|
+| λ_light (illumination loss L_over + L_pix + L_smooth) | 1.0 (unit weight in the total loss) | stage-1 objective in `src/loss.py` |
+| λ_content (content loss L1_mask) | 10.0 | masked L1 content term of the joint objective (Table 2 of the paper) |
+| λ_distill (distillation loss) | 0.7 | `lambda_distill` in `src/distillation.py` |
+| λ_tex (texture preservation loss, Table 2) | 0.5 | texture-preservation term of the joint objective |
+| λ_gan (GAN loss) | 0.1 | `lambda_gan` in `src/distillation.py` |
+| λ_adv / λ_per / λ_tex (GAN-internal weights) | 1 / 10 / 50 | coefficients of `adv_loss` / `percep_loss` / `recon_loss` in `src/gan_losses.py` |
+| λ_depth / λ_gabor (inside L_distill) | 10 / 5 | relative ratio 0.5 in `face_aware_distillation_loss` (`src/distillation.py`), i.e. L_distill = 10·L_depth + 5·L_gabor = 10·(L_depth + 0.5·L_gabor) |
+| λ_reg (L2 weight decay) | 1e-4 | Adam `weight_decay=1e-4` in `scripts/train_stage1.py` and `scripts/train_gan.py` |
 
 ### PGDB-GAN checkpoints (actual files in `weights/`)
 
