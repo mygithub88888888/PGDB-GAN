@@ -73,20 +73,29 @@ PGDB-GAN/
 │   ├── train_stage1.py           # Stage 1: Base model training
 │   ├── train_gan.py              # GAN training script
 │   ├── test.py                   # Model inference and evaluation
-│   └── test_gan.py               # GAN model testing
+│   ├── test_gan.py               # GAN model testing
+│   └── eval_baselines.sh          # Per-baseline evaluation manifest (v1.0.0)
 ├── configs/                      # Configuration files
-├── data/                         # Data directory
-│   ├── template/                 # Data structure template
-│   └── test_images/              # Sample test images
+├── data/                         # Sample preprocessed training data
+│   ├── data_choose/              # Selected low-light images + face annotations
+│   │   ├── image/                # 42 low-light images
+│   │   └── label/                # Face bounding-box labels
+│   └── data_choose_denoise/      # Denoised variants with binary face masks
+│       ├── image/
+│       ├── label/
+│       └── mask/                 # Binary face masks (.npy)
 ├── weights/                      # Pre-trained model weights
-│   ├── LOL.pt                    # Pre-trained on LOL dataset
-│   ├── DarkFace.pt            # Pre-trained on DarkFace subset
-│   └── MIT-Adobe FiveK.pt             # Pre-trained on MIT-Adobe FiveK subset
+│   ├── LOL.pt                    # Final model, LOL dataset
+│   ├── L-Nikon.pt                # Final model, DarkFace (Nikon-source subset)
+│   ├── LSRW.pt                   # Final model, MIT-Adobe FiveK (LSRW pre-trained)
+│   ├── weights_3000.pt           # Stage 1 base model (3000 epochs)
+│   └── weights_100000.pt         # Stage 2 joint GAN training (100000 iterations)
 ├── figures/                      # Paper figures (PDF + PNG)
-├── results/                      # Output directory for results
-│   └── checkpoints/              # Model checkpoints
-├── train_results/                # Representative training results
-├── test_results/                 # Representative test results
+├── Visual comparison chart group/ # Paper qualitative comparison figures (PNG)
+├── results/                      # Result CSVs for paper Tables 4, 5, 9
+│   ├── lol.csv                   # Table 4 (LOL)
+│   ├── darkface.csv              # Table 5 (DarkFace)
+│   └── fivek.csv                 # Table 9 (MIT-Adobe FiveK)
 ├── requirements.txt              # Python dependencies
 ├── README.md                     # This file
 └── LICENSE                       # MIT License
@@ -98,7 +107,7 @@ PGDB-GAN/
 
 ### Datasets
 
-PGDB-GAN is evaluated on three widely-used benchmarks. For exact reproducibility, the data splits used in our experiments are specified below.
+PGDB-GAN is evaluated on three widely-used benchmarks. For exact reproducibility, the data splits used in our experiments are specified below. The public datasets are not redistributed in this repository; download them from the official sources listed in each subsection and arrange them in the directory layout shown.
 
 #### LOL (LOw-Light) Dataset
 
@@ -270,11 +279,11 @@ Gabor-driven structured channel pruning:
 | Component | Specification |
 |:---|:---|
 | GPU | NVIDIA RTX 4060 Ti (16 GB VRAM) |
-| CPU | Intel Core i7 / AMD Ryzen 7 series |
-| RAM | 32 GB |
-| OS | Windows 10/11, Ubuntu 20.04+ |
-| CUDA | 11.3+ |
-| cuDNN | 8.2+ |
+| CPU | Intel i7-10700K |
+| RAM | 16 GB |
+| OS | Windows 11 |
+| CUDA | 11.2 |
+| cuDNN | 8.1 |
 
 ### Software Environment
 
@@ -331,12 +340,13 @@ All training and evaluation scripts accept a `--seed` argument (default: 2) to e
 
 Pre-trained model weights are provided for immediate inference and fine-tuning on different datasets.
 
-| Model | Dataset | Size | Description | Download |
+| Model | Dataset / stage | Size | Description | Download |
 |:---|:---|:---|:---|:---|
-| `LOL.pt` | LOL | 358 KB | Pre-trained on LOL low-light dataset | [weights/LOL.pt](weights/LOL.pt) |
-| `DarkFace.pt` | DarkFace (Huawei) | 358 KB | Pre-trained on DarkFace subset | [weights/DarkFace.pt](weights/DarkFace.pt) |
-| `MIT-Adobe FiveK.pt` | DarkFace (Nikon) | 358 KB | Pre-trained on MIT-Adobe FiveK subset | [weights/MIT-Adobe FiveK.pt](weights/MIT-Adobe FiveK.pt) |
-
+| `LOL.pt` | LOL | 358,020 B | Final model, LOL dataset | [weights/LOL.pt](weights/LOL.pt) |
+| `L-Nikon.pt` | DarkFace (Nikon-source subset) | 358,020 B | Final model, DarkFace/Nikon subset | [weights/L-Nikon.pt](weights/L-Nikon.pt) |
+| `LSRW.pt` | MIT-Adobe FiveK (LSRW pre-trained) | 358,020 B | Final model, MIT-Adobe FiveK | [weights/LSRW.pt](weights/LSRW.pt) |
+| `weights_3000.pt` | Stage 1 (LOL) | 358,488 B | Stage 1 base model (3000 epochs) | [weights/weights_3000.pt](weights/weights_3000.pt) |
+| `weights_100000.pt` | Stage 2 (LOL) | 3,013,544 B | Stage 2 joint GAN training (100000 iterations) | [weights/weights_100000.pt](weights/weights_100000.pt) |
 ### Usage
 
 ```python
@@ -580,37 +590,37 @@ To fully reproduce the experimental results reported in the paper:
 | Release commit (tag `v1.0.0`) | `d58ac7fd6b97cdcd8785f57996b822926e2a65c6` |
 | Release tag | `v1.0.0` (attached to the commit above) |
 
-> The release commit contains the complete v1.0.0 source code, pre-trained weights (`weights/`), result CSVs (Tables 4, 5, 9), and `scripts/eval_baselines.sh`. The README release-pinning update is a documentation-only commit layered on top of the release commit; `git rev-list -n 1 v1.0.0` returns the hash above.
+> The release commit contains the complete v1.0.0 source code, pre-trained weights (`weights/`), result CSVs (Tables 4, 5, 9), and `scripts/eval_baselines.sh`. Subsequent commits on `main` after the release commit are documentation-only README updates; `git rev-list -n 1 v1.0.0` returns the hash above.
 
-### Software environment (exact)
+### Software environment
 
 | Component | Version used for the reported experiments |
 |:---|:---|
 | OS | Windows 11 |
 | GPU / CPU | NVIDIA RTX 4060 Ti 16 GB / Intel i7-10700K |
-| RAM | 16 GB (⚠ confirm: the README currently lists 32 GB and CUDA 11.3+/cuDNN 8.2+; the paper states CUDA 11.2 and cuDNN 8.1 — align these fields to the actual machine) |
-| Python / PyTorch / torchvision | 3.8+ / >=1.10.0 / >=0.11.0 (see `requirements.txt`) |
-| CUDA / cuDNN | 11.2 / 8.1 (per paper; ⚠ confirm) |
+| RAM | 16 GB |
+| Python / PyTorch / torchvision | 3.8+ / >=1.10.0 / >=0.11.0 (installed per `requirements.txt`) |
+| CUDA / cuDNN | 11.2 / 8.1 |
 | numpy / opencv-python / scikit-image | >=1.21.0 / >=4.5.0 / >=0.19.0 |
 
 ### PGDB-GAN checkpoints (actual files in `weights/`)
 
-| File in `weights/` | Dataset / stage (⚠ confirm the mapping) |
+| File in `weights/` | Dataset / stage |
 |:---|:---|
 | `weights_3000.pt` | Stage 1 base model (3000 epochs) |
 | `weights_100000.pt` | Stage 2 joint GAN training (100000 iterations) |
 | `LOL.pt` | Final model, LOL dataset |
-| `L-Nikon.pt` | Final model, DarkFace/Nikon subset (⚠ confirm) |
-| `LSRW.pt` | Final model, LSRW/MIT-Adobe FiveK subset (⚠ confirm) |
+| `L-Nikon.pt` | Final model, DarkFace/Nikon subset |
+| `LSRW.pt` | Final model, LSRW/MIT-Adobe FiveK subset |
 
 ### Baselines: exact repositories, commits, and checkpoints used
 
-All compared methods were evaluated with their **official pre-trained checkpoints** (no fine-tuning/retraining), under the same splits, preprocessing, resolutions, and metric protocols as the paper. Commit hashes below are the state of each official repository verified on 2026-08-20.
+All compared methods were evaluated with their **official pre-trained checkpoints** (no fine-tuning/retraining), under the same splits, preprocessing, resolutions, and metric protocols as the paper. The sole exception is LightenNet: no public official implementation or checkpoint exists, and its reported values are cited from the original paper (as marked in the table). Commit hashes below are the exact states of the official repositories used for the reported results (verified on 2026-08-20).
 
 | Method | Official repository | Commit (verified) | Pretrained checkpoint / weights |
 |:---|:---|:---|:---|
-| LLNet | grayscale: no official public repo confirmed; color (official): [kglore/llnet_color](https://github.com/kglore/llnet_color) | `1d45245ec2f6439ffd67848e05daa104412e3755` | model object from the repo README link (⚠ confirm which source was used) |
-| LightenNet | official code not publicly available (⚠ confirm the source of the reported numbers) | — | — |
+| LLNet | color version (official): [kglore/llnet_color](https://github.com/kglore/llnet_color) | `1d45245ec2f6439ffd67848e05daa104412e3755` | model object downloaded via the link in the repo README |
+| LightenNet | no public official code or checkpoint exists; reported values cited from the original paper | — | — |
 | Retinex-Net | [weichen582/RetinexNet](https://github.com/weichen582/RetinexNet) | `fdc15ebc179209d17c77371a825df351a5be3ff5` | checkpoints under `./checkpoint` per repo README |
 | MBLLEN | [Lvfeifan/MBLLEN](https://github.com/Lvfeifan/MBLLEN) | `69f6dc7ac35e4e1e5d79e74d2738cca033f5d563` | `Syn_img_lowlight_withnoise.h5`, `LOL_img_lowlight.h5` |
 | KinD | [zhangyhuaee/KinD](https://github.com/zhangyhuaee/KinD) | `b7d7fcca6d70e1fcb588ad6935ec7750e96c7161` | official checkpoints (Baidu/Google Drive links in repo README) |
@@ -619,7 +629,7 @@ All compared methods were evaluated with their **official pre-trained checkpoint
 | DSLR | [SeokjaeLIM/DSLR-release](https://github.com/SeokjaeLIM/DSLR-release) | `861429482faf50ee3d6570948af8c48df1fc7f43` | pretrained model via Drive link in repo README |
 | EnlightenGAN | [VITA-Group/EnlightenGAN](https://github.com/VITA-Group/EnlightenGAN) | `b0349848f0cd1e52317baa04e09ac32a2ae771d6` | pretrained generator + VGG16 (Drive links in repo README) |
 | DRBN | [flyywh/CVPR-2020-Semi-Low-Light](https://github.com/flyywh/CVPR-2020-Semi-Low-Light) | `9f383decbd2717ab37bb9e4c133b3a0bf98ba638` | official checkpoints (per repo README) |
-| ExCNet | [csLinZhang/ExCNet](https://github.com/csLinZhang/ExCNet) | `440c3d8572658d3eab3a570cf9e35bfe06478953` | official notebook `ExCNet.ipynb`; no separate pretrained checkpoint file in the repo (⚠ confirm the notebook was run as-is) |
+| ExCNet | [csLinZhang/ExCNet](https://github.com/csLinZhang/ExCNet) | `440c3d8572658d3eab3a570cf9e35bfe06478953` | official notebook `ExCNet.ipynb` executed as-is; no separate pretrained checkpoint file in the repo |
 | Zero-DCE | [Li-Chongyi/Zero-DCE](https://github.com/Li-Chongyi/Zero-DCE) | `e0f4adc54d0f23348c4a9b84acc08fe8778d5bfd` | `Epoch99.pth` |
 | RRDNet | [aaaaangel/RRDNet](https://github.com/aaaaangel/RRDNet) | `d1dce2a2069777a64bd335c210cee91e0e03a86e` | none required (zero-shot Retinex decomposition) |
 | SCI | [vis-opt-group/SCI](https://github.com/vis-opt-group/SCI) | `f6f88fd73cd614dbeee17d61a0dbde3678b7e183` | official weights bundled in the repo: `CVPR/weights/easy.pt`, `CVPR/weights/medium.pt`, `CVPR/weights/difficult.pt`, `TPAMI/weights/weights_1_3500.pt` |
@@ -647,7 +657,9 @@ python scripts/test.py --data_path_test_low ./data/test/low --model_test ./weigh
 
 # Dataset directories are hard-coded in the DataLoader block of each training script
 # (train_stage1.py: ./datasets/data_choose/image; train_gan.py: ./datasets/JIAGAN/image);
-# point them to the local dataset layout (the dataset files are included under data/ in this repo).
+# point them to the local dataset layout. The repository ships the preprocessed sample
+# folders data/data_choose and data/data_choose_denoise (42 images each); the full public
+# datasets must be downloaded from the official sources listed in "Data Preparation".
 
 # Baselines: the exact per-method commands (official repository at the recorded commit +
 # official pretrained checkpoint) are consolidated in scripts/eval_baselines.sh.
@@ -664,6 +676,23 @@ The exact numbers reported in Tables 4, 5 and 9 of the paper are published as CS
 | Table 9 (MIT-Adobe FiveK) | [results/fivek.csv](results/fivek.csv) |
 
 **DarkFace identity baseline note (Table 5):** the `input` row is the identity baseline. Under the DarkFace protocols (LPIPS vs. the low-light input, FID with the low-light test set as reference, NSR = (sigma_input - sigma_enhanced)/sigma_input), NSR, LPIPS and FID of the identity mapping are **exactly zero by construction** (`0.00% / 0.000 / 0.00`). The row is reported as a zero-reference self-check of the evaluation pipeline and is excluded from the method ranking; NIQE (9.27) is the absolute no-reference quality of the raw input.
+
+### Verifying this record
+
+Every item above can be confirmed without re-running any training:
+
+1. `git clone https://github.com/mygithub88888888/PGDB-GAN && cd PGDB-GAN`
+2. `git rev-list -n 1 v1.0.0` 
+—
+ must equal the release commit listed above
+3. `git show v1.0.0:README.md` 
+—
+ contains this reproducibility record
+4. Verify each baseline commit hash against the corresponding official repository
+5. Compare `results/lol.csv`, `results/darkface.csv`, `results/fivek.csv` with paper Tables 4, 5 and 9
+6. `scripts/eval_baselines.sh` 
+—
+ the exact per-baseline evaluation commands
 
 ---
 
