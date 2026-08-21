@@ -1,0 +1,46 @@
+{
+  "enhanced_root": "D:\\LFW_data\\enhanced_darkface",
+  "experiment": "identity_fidelity",
+  "labels_dir": "F:\\github-code\\ZeroIG-main\\PDGB-GAN\\datasets\\data_choose\\label",
+  "methods": [
+    "input",
+    "PGDB-GAN",
+    "SCI",
+    "Retinexformer"
+  ],
+  "mtcnn": false,
+  "n_embedded": 415,
+  "n_originals": 415,
+  "originals": "F:\\github-code\\ZeroIG-main\\PDGB-GAN\\datasets\\data_choose\\image",
+  "rec_model": "buffalo_l",
+  "rows": [
+    {
+      "mean_cosine": 1.0,
+      "method": "input",
+      "pairs": 415,
+      "std_cosine": 0.0
+    },
+    {
+      "mean_cosine": 0.5434198653302997,
+      "method": "PGDB-GAN",
+      "pairs": 415,
+      "std_cosine": 0.2915521668908845
+    },
+    {
+      "mean_cosine": 0.656121301920299,
+      "method": "SCI",
+      "pairs": 415,
+      "std_cosine": 0.30954678386309054
+    },
+    {
+      "mean_cosine": 0.583489587638213,
+      "method": "Retinexformer",
+      "pairs": 415,
+      "std_cosine": 0.2889829970104312
+    }
+  ],
+  "timestamp": "2026-08-21T18:06:55",
+  "snr_net_results": {
+    "source": "author rerun with the official LOLv1.pth checkpoint (SNR-Net official repo); identity_fidelity_mean_cosine=0.603, recognition_rank1=0.876667, verification_auc=0.9631, tar_at_far_0.001=0.8929"
+  }
+}
