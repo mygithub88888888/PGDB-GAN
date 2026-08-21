@@ -616,8 +616,8 @@ To fully reproduce the experimental results reported in the paper:
 | GPU / CPU | NVIDIA RTX 4060 Ti 16 GB / Intel i7-10700K |
 | RAM | 16 GB |
 | Storage | 512 GB SSD |
-| Python / PyTorch / torchvision | PyTorch with CUDA 11.2 and cuDNN 8.1; requirement range Python 3.8+ / PyTorch 1.10+ / torchvision 0.11+ (`requirements.txt`) |
-| CUDA / cuDNN | 11.2 / 8.1 |
+| Python / PyTorch / torchvision | PyTorch 2.5.1 with CUDA 12.1 and cuDNN 8.9; requirement range Python 3.8+ / PyTorch 1.10+ / torchvision 0.11+ (`requirements.txt`) |
+| CUDA / cuDNN | 12.1 / 8.9 |
 | numpy / opencv-python / scikit-image | >=1.21.0 / >=4.5.0 / >=0.19.0 |
 
 ### Hyper-parameter mapping (paper symbols ↔ released code)
@@ -629,10 +629,10 @@ The loss hyper-parameters reported in the paper (Section 3 equations and Table 2
 | λ_light (illumination loss L_over + L_pix + L_smooth) | 1.0 (unit weight in the total loss) | stage-1 objective in `src/loss.py` |
 | λ_content (content loss L1_mask) | 10.0 | masked L1 content term of the joint objective (Table 2 of the paper) |
 | λ_distill (distillation loss) | 0.7 | `lambda_distill` in `src/distillation.py` |
-| λ_tex (texture preservation loss, Table 2) | 0.5 | texture-preservation term of the joint objective |
+| λ_tex (texture-retention loss, Table 2) | 0.5 | texture-retention loss of the pruning fine-tuning stage (paper Section 3.4); the released `src/pruning.py` performs the structured pruning itself |
 | λ_gan (GAN loss) | 0.1 | `lambda_gan` in `src/distillation.py` |
-| λ_adv / λ_per / λ_tex (GAN-internal weights) | 1 / 10 / 50 | coefficients of `adv_loss` / `percep_loss` / `recon_loss` in `src/gan_losses.py` |
-| λ_depth / λ_gabor (inside L_distill) | 10 / 5 | relative ratio 0.5 in `face_aware_distillation_loss` (`src/distillation.py`), i.e. L_distill = 10·L_depth + 5·L_gabor = 10·(L_depth + 0.5·L_gabor) |
+| λ_adv / λ_per / λ_gram (texture-GAN branch internal weights) | 1 / 10 / 50 | coefficients of `adv_loss` / `percep_loss` / `recon_loss` in `src/gan_losses.py` |
+| λ_depth / λ_gabor (inside L_distill) | 1 / 0.5 | L_distill = L_depth + 0.5·L_gabor in `face_aware_distillation_loss` (`src/distillation.py`), scaled by λ_distill = 0.7 in the joint objective |
 | λ_reg (L2 weight decay) | 1e-4 | Adam `weight_decay=1e-4` in `scripts/train_stage1.py` and `scripts/train_gan.py` |
 
 ### PGDB-GAN checkpoints (actual files in `weights/`)
@@ -676,7 +676,7 @@ python scripts/train_stage1.py --batch_size 16 --lr 2e-4 --epochs 3000 --seed <s
 
 # Stage 2 (joint GAN fine-tuning: the 100,000 iterations of Stage 2; the script's
 # "--epochs" value is the iteration counter and saves weights_<counter>.pt)
-python scripts/train_gan.py --model_pretrain ./results/stage1/model_epochs/weights_3000.pt --lr 1e-4 --epochs 100000 --seed <seed> --gpu 0 --save ./results/stage2
+python scripts/train_gan.py --model_pretrain ./results/stage1/model_epochs/weights_3000.pt --batch_size 16 --lr 1e-4 --epochs 100000 --seed <seed> --gpu 0 --save ./results/stage2
 
 # Stage 3 (hotspot-aware knowledge distillation and structured pruning).
 # These scripts take no command-line arguments: the paths, batch size, and pruning
@@ -742,7 +742,7 @@ Scripts: [scripts/identity_fidelity.py](scripts/identity_fidelity.py), [scripts/
 
 ### Loss-level and interaction ablation (paper Table 13)
 
-The loss-level and interaction ablation reported in Table 13 of the paper is published as `results/Table13_loss_ablation.csv` (mean ± std over five independent seeds). Protocol: every variant is trained with the **identical three-stage training protocol, initialization, random seeds, and hyper-parameters as the full model of paper Table 11 (LOL)**; the only difference is the ablated loss term(s). Notation follows the paper: `L_light = L_over + L_pix + L_smooth`, `L_content = L1_mask`. Each loss term is disabled by zeroing its coefficient in the training objective of the released training scripts; no other code, data, or hyper-parameter is changed. The numerical regularizers (`L_tv` and the weight-decay term) remain enabled in all variants. The `w/o L_GAN` and `Full model (all losses)` rows reproduce the corresponding configurations of Table 11 exactly. Seeds: `2, 7, 42, 123, 2024`. Evaluation: LOL test split (15 images) with `scripts/metrics.py`, the same metric protocol used for Tables 4 and 11 (PSNR / SSIM / NSR / LPIPS / MSE / FID / NIQE).
+The loss-level and interaction ablation reported in Table 13 of the paper is published as `results/Table13_loss_ablation.csv` (mean ± std over five independent seeds). Protocol: every variant is trained with the **identical three-stage training protocol, initialization, random seeds, and hyper-parameters as the full model of paper Table 11 (LOL)**; the only difference is the ablated loss term(s). Notation follows the paper: `L_light = L_over + L_pix + L_smooth`, `L_content = L1_mask`. Each loss term is disabled by zeroing its coefficient in the training objective of the released training scripts — L_light in `src/loss.py`, L_content and L_GAN in `src/model_gan.py`, and L_distill in `src/distillation.py` (L_tex is the texture-retention loss of the pruning fine-tuning stage, paper Section 3.4); no other code, data, or hyper-parameter is changed. The numerical regularizers (`L_tv` and the weight-decay term) remain enabled in all variants. The `w/o L_GAN` and `Full model (all losses)` rows reproduce the corresponding configurations of Table 11 exactly. Seeds: `2, 7, 42, 123, 2024`. Evaluation: LOL test split (15 images) with `scripts/metrics.py`, the same metric protocol used for Tables 4 and 11 (PSNR / SSIM / NSR / LPIPS / MSE / FID / NIQE).
 
 ### Verifying this record
 
