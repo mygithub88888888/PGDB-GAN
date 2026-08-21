@@ -1,5 +1,6 @@
 import os
 import sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
 import numpy as np
 import torch
 import argparse
@@ -7,14 +8,15 @@ import logging
 import torch.utils
 from PIL import Image
 from torch.autograd import Variable
-from model import Finetunemodel
-from multi_read_data import DataLoader
+from model import Finetunemodel  # src/model.py
+from dataset import DataLoader  # src/dataset.py
 from thop import profile
 
 
 
 root_dir = os.path.abspath('./')
 sys.path.append(root_dir)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
 
 parser = argparse.ArgumentParser("ZERO-IG")
 parser.add_argument('--data_path_test_low', type=str, default='./data/8',
@@ -71,8 +73,8 @@ def main():
         p.requires_grad = False
     with torch.no_grad():
         for _, (input,  img_name) in enumerate(test_queue):
-            input = Variable(input, volatile=True).cuda()
-            input_name = img_name[0].split('/')[-1].split('.')[0]
+            input = input.cuda()
+            input_name = os.path.splitext(os.path.basename(img_name[0]))[0]
             enhance,output = model(input)
             input_name = '%s' % (input_name)
             enhance=save_images(enhance)
