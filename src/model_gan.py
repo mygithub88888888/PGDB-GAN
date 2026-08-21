@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from loss111 import LossFunction, TextureDifference
-from utilspro import blur, pair_downsampler
+from loss import LossFunction, TextureDifference
+from utils import blur, pair_downsampler
 
 class Discriminator(nn.Module):
     def __init__(self, in_channels=3):
@@ -178,7 +178,7 @@ class Network(nn.Module):
         l1_loss = torch.nn.L1Loss()(enhanced * face_mask, input * face_mask)
         d_fake = self.discriminator(enhanced)
         adversarial_loss = -torch.mean(d_fake)
-        total_loss = l1_loss + 0.1 * adversarial_loss
+        total_loss = 10.0 * l1_loss + 0.1 * adversarial_loss
         return total_loss
 
 
@@ -191,8 +191,9 @@ class Finetunemodel(nn.Module):
         self.denoise_1 = Denoise_1(chan_embed=48)
         self.denoise_2 = Denoise_2(chan_embed=48)
 
-        base_weights = torch.load(weights, map_location='cuda')
+        base_weights = torch.load(weights, map_location=('cuda' if torch.cuda.is_available() else 'cpu'))
         pretrained_dict = base_weights
         model_dict = self.state_dict()
         pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
         model_dict.update(pretrained_dict)
+        self.load_state_dict(model_dict)
