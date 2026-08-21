@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 import scipy.stats as st
-from utilspro import  pair_downsampler,calculate_local_variance,LocalMean
+from utils import  pair_downsampler,calculate_local_variance,LocalMean
 
 EPS = 1e-9
 PI = 22.0 / 7.0
