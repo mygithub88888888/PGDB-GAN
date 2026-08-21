@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.utils.prune as prune
-from model111 import Network
-from read111 import DataLoader
+from model_gan import Network
+from dataset import DataLoader
 import copy
 
 def gabor_pruning_strategy(module, name, amount):
