@@ -35,7 +35,7 @@ class TextureGANLoss(nn.Module):
         recon_loss = self.l1_loss(gen_output, real_img)
 
         return {
-            'total': adv_loss + 0.1 * percep_loss + 0.9 * recon_loss,
+            'total': adv_loss + 10 * percep_loss + 50 * recon_loss,
             'adv': adv_loss,
             'percep': percep_loss,
             'recon': recon_loss
