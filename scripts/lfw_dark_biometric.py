@@ -1,5 +1,5 @@
 """Experiments 2 & 3 - Controlled low-light recognition and verification on
-LFW aligned (Reviewer #3). One pipeline, two statistic blocks.
+LFW aligned. One pipeline, two statistic blocks.
 
 prepare : LFW normal-light -> synthetic low-light (DEGRADE_PARAMS, fixed
           seed; per-image noise derived deterministically from the path).
