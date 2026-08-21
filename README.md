@@ -594,12 +594,13 @@ To fully reproduce the experimental results reported in the paper:
 
 ### Software environment
 
-| Component | Version used for the reported experiments |
+| Component | Specification (per paper, Section 4.1) |
 |:---|:---|
 | OS | Windows 11 |
 | GPU / CPU | NVIDIA RTX 4060 Ti 16 GB / Intel i7-10700K |
 | RAM | 16 GB |
-| Python / PyTorch / torchvision | 3.8+ / >=1.10.0 / >=0.11.0 (installed per `requirements.txt`) |
+| Storage | 512 GB SSD |
+| Python / PyTorch / torchvision | PyTorch with CUDA 11.2 and cuDNN 8.1; requirement range Python 3.8+ / PyTorch 1.10+ / torchvision 0.11+ (`requirements.txt`) |
 | CUDA / cuDNN | 11.2 / 8.1 |
 | numpy / opencv-python / scikit-image | >=1.21.0 / >=4.5.0 / >=0.19.0 |
 
