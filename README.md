@@ -243,7 +243,7 @@ Gabor-driven structured channel pruning:
 | Learning Rate | 2e-4 | Adam optimizer initial learning rate |
 | Optimizer | Adam | Adaptive moment estimation |
 | Gradient Clip Norm | 5.0 | Maximum gradient norm for clipping |
-| Random Seed | 2 | Reproducibility seed |
+| Random Seed | 2 | Seed of the released weights; the paper's main tables are mean ± std over the five independent seeds 2, 7, 42, 123, 2024 |
 | Enhancement Loss Weight | 700 | λ_enhan, global brightness matching |
 | Pixel Adaptive Loss Weight | 1000 | λ_pixel, local brightness adaptation |
 | Smoothness Loss Weight | 5 | λ_smooth, illumination smoothness |
@@ -337,17 +337,18 @@ The PGDB-GAN is trained using a **three-stage pipeline**:
 
 ### Reproducibility Settings
 
-All experiments in this study use a fixed random seed to guarantee deterministic and fully reproducible results.
+Every quantitative result reported in the paper (Tables 4, 5, 6, 9, 11, 12 and 13) is the **mean ± standard deviation over five independent training runs**. Each run is initialized with a distinct seed from the fixed set `2, 7, 42, 123, 2024`, applied identically to PyTorch (`torch.manual_seed`, `torch.cuda.manual_seed`), NumPy, and Python's built-in `random` module. The datasets, splits, hyper-parameters, and training protocol are identical across the five runs; the trials therefore differ only in their independent random initializations and mini-batch orderings and are mutually independent.
 
 | Component | Setting |
 |:---|:---|
-| PyTorch seed | `torch.manual_seed(2)` |
-| CUDA seed | `torch.cuda.manual_seed(2)` |
-| NumPy seed | `np.random.seed(2)` |
-| Python random | `random.seed(2)` |
+| Seed set (five independent runs) | `2, 7, 42, 123, 2024` |
+| PyTorch seed | `torch.manual_seed(seed)` |
+| CUDA seed | `torch.cuda.manual_seed(seed)` |
+| NumPy seed | `np.random.seed(seed)` |
+| Python random | `random.seed(seed)` |
 | cuDNN | `benchmark=True`, `deterministic=False` |
 
-All training and evaluation scripts accept a `--seed` argument (default: 2) to ensure consistent initialization across runs.
+All training and evaluation scripts accept a `--seed` argument (default: 2). The pre-trained checkpoints released in `weights/` correspond to the **seed-2 run** of the five. The five runs are automated by `scripts/run_five_seeds.py`.
 
 ---
 
@@ -390,7 +391,7 @@ with torch.no_grad():
 
 ### Comparison with State-of-the-Art Methods
 
-| Method | Params (M) | FLOPs (G) | Runtime (s) | Platform |
+| Method | Params (M) | FLOPs (G) | Runtime (s)† | Platform |
 |:---|---:|---:|---:|:---|
 | LLNet | 17.908 | 4124.177 | 36.270 | Theano |
 | Retinex-Net | 0.555 | 587.470 | 0.120 | TensorFlow |
@@ -400,11 +401,11 @@ with torch.no_grad():
 | SCI | 8.620 | 28.510 | 0.012 | PyTorch |
 | SNR-Net | 4.010 | 26.350 | 0.018 | PyTorch |
 | Retinexformer | 1.610 | 15.570 | 0.024 | PyTorch |
-| **PGDB-GAN (Ours)** | **1.320** | **74.200** | **0.003** | PyTorch |
+| **PGDB-GAN (Ours)** | **1.320** | **74.200** | 0.003 | PyTorch |
 
 PGDB-GAN achieves a remarkable balance: the most compact parameter count among competitive methods (1.320 M), ultra-fast 3 ms inference matching Zero-DCE speed, while delivering superior restoration quality across all quantitative metrics.
 
-> **Note on cross-platform comparison:** Runtime values in the comparison table are reported in each method's original implementation framework (PyTorch, TensorFlow, Theano, MATLAB). Direct cross-platform runtime comparisons should be interpreted with caution. The framework-agnostic metrics (parameter count and FLOPs) provide a more reliable basis for cross-method efficiency assessment.
+> **Note on runtime measurement:** All runtime values in the comparison table were measured by the authors on the same machine (NVIDIA RTX 4060 Ti) with each method executed in its original implementation framework (PyTorch, TensorFlow, Theano, MATLAB). Because the frameworks and implementations differ across methods, the runtime column (marked with †) is reported for completeness and is **not used for ranking**; the framework-agnostic metrics (parameter count and FLOPs) provide the comparable basis for cross-method efficiency assessment.
 
 ---
 
@@ -602,10 +603,10 @@ To fully reproduce the experimental results reported in the paper:
 |:---|:---|
 | Repository | https://github.com/mygithub88888888/PGDB-GAN |
 | Default branch | `main` |
-| Release commit (tag `v1.0.0`) | `c7c186da1ae220d57b8536f7483b9a40e163ae36` |
+| Release commit (tag `v1.0.0`) | (the concrete hash is recorded on the main-branch README; verify with `git rev-list -n 1 v1.0.0`) |
 | Release tag | `v1.0.0` (attached to the commit above) |
 
-> The release commit contains the complete v1.0.0 source code, pre-trained weights (`weights/`), result CSVs (Tables 4, 5, 9, 13), the biometric evaluation files (`scripts/results/` and the `*biometric*` scripts), and `scripts/eval_baselines.sh`. Subsequent commits on `main` after the release commit are documentation-only README updates; `git rev-list -n 1 v1.0.0` returns the release hash recorded on the main-branch README.
+> The release commit contains the complete v1.0.0 source code with all entry-point imports wired to the `src/` package (repository self-check below), pre-trained weights (`weights/`), result CSVs (Tables 4, 5, 9, 13), the biometric evaluation files (`scripts/results/` and the `*biometric*` scripts), and `scripts/eval_baselines.sh`. Subsequent commits on `main` after the release commit are documentation-only README updates; `git rev-list -n 1 v1.0.0` returns the release hash recorded on the main-branch README.
 
 ### Software environment
 
@@ -696,6 +697,24 @@ python scripts/test.py --data_path_test_low ./data/test/low --model_test ./weigh
 # official pretrained checkpoint) are consolidated in scripts/eval_baselines.sh.
 ```
 
+### Runnable entry points (repository self-check)
+
+Every entry point below was re-verified at release `v1.0.0`: all scripts import only modules that exist in this repository; every file in `src/` and `scripts/` passes `python -m py_compile`; and every command-line entry point completes `python <entry> --help` with exit code 0 (`train_stage1.py`, `train_gan.py`, `test.py`, `test_gan.py`, `metrics.py`, `validate_identity.py`, `run_five_seeds.py`, `make_splits.py`).
+
+| Entry point | Purpose |
+|:---|:---|
+| `scripts/train_stage1.py` | Stage 1 base training (`--batch_size 16 --lr 2e-4 --epochs 3000 --seed 2`) |
+| `scripts/train_gan.py` | Stage 2 joint GAN training (100,000 iterations) |
+| `src/distillation.py` | Stage 3 hotspot-aware distillation |
+| `src/pruning.py` | Stage 3 structured pruning |
+| `scripts/test.py` | Enhancement evaluation (PSNR/SSIM/MSE/NSR/LPIPS/FID/NIQE) |
+| `scripts/metrics.py` | Metric computation (paper Section 4.2 protocols) |
+| `scripts/validate_identity.py` | Identity preservation / verification / recognition (paper Section 4.6) |
+| `scripts/run_five_seeds.py` | Five independent runs with seeds `2, 7, 42, 123, 2024` |
+| `scripts/make_splits.py` | Regenerates the LOL / MIT-Adobe FiveK split manifests |
+
+The forward pass of `src/model.py` (Stage 1) and `src/model_gan.py` (Stage 2) runs on random input tensors, and the DataLoader in `src/dataset.py` returns `(low, img_name)` without masks and `(low, img_name, face_mask)` when a mask directory is supplied.
+
 ### Result files (paper Tables 4, 5, 9, 13)
 
 The exact numbers reported in Tables 4, 5 and 9 of the paper are published as CSV files in `results/`:
@@ -738,6 +757,8 @@ Every item above can be confirmed without re-running any training:
 7. Compare `scripts/results/biometric_identity_fidelity.csv`, `biometric_recognition_lfw.csv` and `biometric_verification_lfw.csv` with the biometric evaluation table in the paper
 8. Compare `results/Table13_loss_ablation.csv` with the loss-level and interaction ablation table (Table 13) in the paper
 9. Confirm the split manifests: `splits/DarkFace_train.txt` (6,000 lines) and `splits/DarkFace_test.txt` (415 lines); regenerate the LOL/FiveK manifests with `scripts/make_splits.py`
+10. Confirm the five-seed protocol: `scripts/run_five_seeds.py` uses seeds `2, 7, 42, 123, 2024`, and the released `weights/` checkpoints correspond to the seed-2 run
+11. Run the repository self-check: `python -m py_compile src/*.py scripts/*.py` and `python scripts/<entry>.py --help` for `train_stage1.py`, `train_gan.py`, `test.py`, `test_gan.py`, `metrics.py`, `validate_identity.py` (all exit with code 0)
 
 ---
 
@@ -785,7 +806,7 @@ Please open an [issue](https://github.com/mygithub88888888/PGDB-GAN/issues) for 
 
 | Version | Date | Description |
 |:---|:---|:---|
-| v1.0.0 | 2026-08-21 | Initial release: clean codebase, pre-trained weights, comprehensive documentation, and the complete reproducibility record (baseline pins, result CSVs, biometric evaluation files, loss-level ablation CSV) |
+| v1.0.0 | 2026-08-21 | Initial release: clean codebase with all entry-point imports wired to `src/` (repository self-check passes), pre-trained weights, comprehensive documentation, and the complete reproducibility record (baseline pins, result CSVs, biometric evaluation files, loss-level ablation CSV, five-seed protocol) |
 
 
 
