@@ -41,6 +41,22 @@
   ],
   "timestamp": "2026-08-21T18:06:55",
   "snr_net_results": {
-    "source": "author rerun with the official LOLv1.pth checkpoint (SNR-Net official repo); identity_fidelity_mean_cosine=0.603, recognition_rank1=0.876667, verification_auc=0.9631, tar_at_far_0.001=0.8929"
+    "source": "author rerun with the official LOLv1.pth checkpoint (SNR-Net official repo)",
+    "identity_fidelity": {
+      "mean_cosine": 0.603,
+      "std_cosine": 0.273863
+    },
+    "recognition": {
+      "rank1": 0.876667,
+      "rank2": 0.9173,
+      "rank3": 0.9189,
+      "rank4": 0.9237,
+      "rank5": 0.9258
+    },
+    "verification": {
+      "auc": 0.9631,
+      "tar_at_far_0.001": 0.8929,
+      "tar_at_far_0.01": 0.9216
+    }
   }
 }
