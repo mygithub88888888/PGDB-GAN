@@ -176,7 +176,7 @@ class Finetunemodel(nn.Module):
         self.denoise_1 = Denoise_1(chan_embed=48)
         self.denoise_2 = Denoise_2(chan_embed=48)
 
-        base_weights = torch.load(weights, map_location='cuda')
+        base_weights = torch.load(weights, map_location=('cuda' if torch.cuda.is_available() else 'cpu'))
         pretrained_dict = base_weights
         model_dict = self.state_dict()
         pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
