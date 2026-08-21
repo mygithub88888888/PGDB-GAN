@@ -391,21 +391,21 @@ with torch.no_grad():
 
 ### Comparison with State-of-the-Art Methods
 
-| Method | Params (M) | FLOPs (G) | Runtime (s)† | Platform |
-|:---|---:|---:|---:|:---|
-| LLNet | 17.908 | 4124.177 | 36.270 | Theano |
-| Retinex-Net | 0.555 | 587.470 | 0.120 | TensorFlow |
-| KinD | 8.160 | 574.954 | 0.148 | TensorFlow |
-| EnlightenGAN | 8.637 | 273.240 | 0.008 | PyTorch |
-| Zero-DCE | 0.079 | 84.990 | 0.003 | PyTorch |
-| SCI | 8.620 | 28.510 | 0.012 | PyTorch |
-| SNR-Net | 4.010 | 26.350 | 0.018 | PyTorch |
-| Retinexformer | 1.610 | 15.570 | 0.024 | PyTorch |
-| **PGDB-GAN (Ours)** | **1.320** | **74.200** | 0.003 | PyTorch |
+| Method | Params (M) | FLOPs (G) | Platform |
+|:---|---:|---:|:---|
+| LLNet | 17.908 | 4124.177 | Theano |
+| Retinex-Net | 0.555 | 587.470 | TensorFlow |
+| KinD | 8.160 | 574.954 | TensorFlow |
+| EnlightenGAN | 8.637 | 273.240 | PyTorch |
+| Zero-DCE | 0.079 | 84.990 | PyTorch |
+| SCI | 8.620 | 28.510 | PyTorch |
+| SNR-Net | 4.010 | 26.350 | PyTorch |
+| Retinexformer | 1.610 | 15.570 | PyTorch |
+| **PGDB-GAN (Ours)** | **1.320** | **74.200** | PyTorch |
 
 PGDB-GAN achieves a remarkable balance: the most compact parameter count among competitive methods (1.320 M), ultra-fast 3 ms inference matching Zero-DCE speed, while delivering superior restoration quality across all quantitative metrics.
 
-> **Note on runtime measurement:** All runtime values in the comparison table were measured by the authors on the same machine (NVIDIA RTX 4060 Ti) with each method executed in its original implementation framework (PyTorch, TensorFlow, Theano, MATLAB). Because the frameworks and implementations differ across methods, the runtime column (marked with †) is reported for completeness and is **not used for ranking**; the framework-agnostic metrics (parameter count and FLOPs) provide the comparable basis for cross-method efficiency assessment.
+> **Note on runtime comparison:** Because each method is implemented in its own framework (PyTorch, TensorFlow, Theano, MATLAB), runtimes are not compared across methods; the framework-agnostic metrics (parameter count and FLOPs) provide the comparable basis for cross-method efficiency assessment.
 
 ---
 
