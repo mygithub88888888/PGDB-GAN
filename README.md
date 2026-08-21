@@ -403,9 +403,9 @@ with torch.no_grad():
 | Retinexformer | 1.610 | 15.570 | PyTorch |
 | **PGDB-GAN (Ours)** | **1.320** | **74.200** | PyTorch |
 
-PGDB-GAN achieves a remarkable balance: the most compact parameter count among competitive methods (1.320 M), ultra-fast 3 ms inference matching Zero-DCE speed, while delivering superior restoration quality across all quantitative metrics.
+PGDB-GAN achieves a remarkable balance: a highly compact 1.320 M parameter count with ultra-fast 3 ms inference on an NVIDIA RTX 4060 Ti GPU at 720P resolution, while delivering superior restoration quality across all quantitative metrics.
 
-> **Note on runtime comparison:** Because each method is implemented in its own framework (PyTorch, TensorFlow, Theano, MATLAB), runtimes are not compared across methods; the framework-agnostic metrics (parameter count and FLOPs) provide the comparable basis for cross-method efficiency assessment.
+> **Note on runtime comparison:** In the revised manuscript the runtime column has been removed from the comparison table, because each method is implemented in its own framework (PyTorch, TensorFlow, Theano, MATLAB) and runtimes cannot be fairly compared across methods. The framework-agnostic metrics (parameter count and FLOPs) provide the comparable basis for cross-method efficiency assessment.
 
 ---
 
