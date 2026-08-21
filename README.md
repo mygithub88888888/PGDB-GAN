@@ -603,10 +603,10 @@ To fully reproduce the experimental results reported in the paper:
 |:---|:---|
 | Repository | https://github.com/mygithub88888888/PGDB-GAN |
 | Default branch | `main` |
-| Release commit (tag `v1.0.0`) | `b4b0634f73b4395a29d371bad1d9595914d56f59` |
-| Release tag | `v1.0.0` (attached to the commit above) |
+| Release commit (tag `v1.0.0`) | Resolved with `git rev-list -n 1 v1.0.0`; the resolved hash is recorded in the v1.0.0 GitHub Release notes |
+| Release tag | `v1.0.0` (points to the final revision commit; the released tree equals the final manuscript) |
 
-> The release commit contains the complete v1.0.0 source code with all entry-point imports wired to the `src/` package (repository self-check below), pre-trained weights (`weights/`), result CSVs (Tables 4, 5, 9, 13), the biometric evaluation files (`scripts/results/` and the `*biometric*` scripts), and `scripts/eval_baselines.sh`. Subsequent commits on `main` after the release commit are documentation-only README updates; `git rev-list -n 1 v1.0.0` returns the release hash recorded on the main-branch README.
+> The release commit contains the complete v1.0.0 source code with all entry-point imports wired to the `src/` package (repository self-check below), pre-trained weights (`weights/`), result CSVs (Tables 4, 5, 9, 13), the biometric evaluation files (`scripts/results/` and the `*biometric*` scripts), and `scripts/eval_baselines.sh`. At the time of this revision the `v1.0.0` tag and `main` point to the same commit; `git rev-list -n 1 v1.0.0` resolves the pinned release commit, and the resolved hash is also recorded in the v1.0.0 GitHub Release notes.
 
 ### Software environment
 
@@ -749,7 +749,7 @@ The loss-level and interaction ablation reported in Table 13 of the paper is pub
 Every item above can be confirmed without re-running any training:
 
 1. `git clone https://github.com/mygithub88888888/PGDB-GAN && cd PGDB-GAN`
-2. `git rev-list -n 1 v1.0.0` must equal the release commit recorded on the main-branch README
+2. `git rev-list -n 1 v1.0.0` must equal the release commit recorded in the v1.0.0 GitHub Release notes
 3. `git show v1.0.0:README.md` contains this reproducibility record
 4. Verify each baseline commit hash against the corresponding official repository
 5. Compare `results/lol.csv`, `results/darkface.csv`, `results/fivek.csv` with paper Tables 4, 5 and 9
@@ -806,7 +806,7 @@ Please open an [issue](https://github.com/mygithub88888888/PGDB-GAN/issues) for 
 
 | Version | Date | Description |
 |:---|:---|:---|
-| v1.0.0 | 2026-08-21 | Initial release: clean codebase with all entry-point imports wired to `src/` (repository self-check passes), pre-trained weights, comprehensive documentation, and the complete reproducibility record (baseline pins, result CSVs, biometric evaluation files, loss-level ablation CSV, five-seed protocol) |
+| v1.0.0 | 2026-08-21 (republished 2026-08-22) | Initial release: clean codebase with all entry-point imports wired to `src/` (repository self-check passes), pre-trained weights, comprehensive documentation, and the complete reproducibility record (baseline pins, result CSVs, biometric evaluation files, loss-level ablation CSV, five-seed protocol). Republished at the final revision commit on 2026-08-22: efficiency comparison table aligned with the final manuscript (cross-method runtime column removed; Params, FLOPs and Platform retained) |
 
 
 
