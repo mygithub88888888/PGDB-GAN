@@ -1,4 +1,4 @@
-# PGDB-GAN: A Dynamic Enhancement Method for Low-Light Facial Features through Synergy of Physical Illumination and Adversarial Learning
+﻿# PGDB-GAN: A Dynamic Enhancement Method for Low-Light Facial Features through Synergy of Physical Illumination and Adversarial Learning
 
 **Official PyTorch Implementation**
 
@@ -74,7 +74,12 @@ PGDB-GAN/
 │   ├── train_gan.py              # GAN training script
 │   ├── test.py                   # Model inference and evaluation
 │   ├── test_gan.py               # GAN model testing
-│   └── eval_baselines.sh          # Per-baseline evaluation manifest (v1.0.0)
+│   ├── eval_baselines.sh          # Per-baseline evaluation manifest (v1.0.0)
+│   ├── biometric_common.py        # Shared ArcFace/MTCNN embedding utilities
+│   ├── identity_fidelity.py       # Experiment (1): DarkFace identity fidelity
+│   ├── lfw_dark_biometric.py      # Experiments (2)/(3): LFW recognition + verification
+│   ├── README_biometric.md        # Biometric protocol, commands, released results
+│   └── results/                   # Biometric result CSVs + per-run config JSONs
 ├── configs/                      # Configuration files
 ├── data/                         # Sample preprocessed training data
 │   ├── data_choose/              # Selected low-light images + face annotations
@@ -587,10 +592,10 @@ To fully reproduce the experimental results reported in the paper:
 |:---|:---|
 | Repository | https://github.com/mygithub88888888/PGDB-GAN |
 | Default branch | `main` |
-| Release commit (tag `v1.0.0`) | `d58ac7fd6b97cdcd8785f57996b822926e2a65c6` |
+| Release commit (tag `v1.0.0`) | (pinned to the commit containing all reproducibility artifacts; the concrete hash is recorded on the main-branch README) |
 | Release tag | `v1.0.0` (attached to the commit above) |
 
-> The release commit contains the complete v1.0.0 source code, pre-trained weights (`weights/`), result CSVs (Tables 4, 5, 9), and `scripts/eval_baselines.sh`. Subsequent commits on `main` after the release commit are documentation-only README updates; `git rev-list -n 1 v1.0.0` returns the hash above.
+> The release commit contains the complete v1.0.0 source code, pre-trained weights (`weights/`), result CSVs (Tables 4, 5, 9), the biometric evaluation files (`scripts/results/` and the `*biometric*` scripts), and `scripts/eval_baselines.sh`. Subsequent commits on `main` after the release commit are documentation-only README updates; `git rev-list -n 1 v1.0.0` returns the release hash recorded on the main-branch README.
 
 ### Software environment
 
@@ -678,6 +683,18 @@ The exact numbers reported in Tables 4, 5 and 9 of the paper are published as CS
 
 **DarkFace identity baseline note (Table 5):** the `input` row is the identity baseline. Under the DarkFace protocols (LPIPS vs. the low-light input, FID with the low-light test set as reference, NSR = (sigma_input - sigma_enhanced)/sigma_input), NSR, LPIPS and FID of the identity mapping are **exactly zero by construction** (`0.00% / 0.000 / 0.00`). The row is reported as a zero-reference self-check of the evaluation pipeline and is excluded from the method ranking; NIQE (9.27) is the absolute no-reference quality of the raw input.
 
+### Biometric evaluation files (Reviewer #3: recognition, verification, identity preservation)
+
+The controlled low-light biometric benchmark reported in the paper (LFW View-2 fold 1: 300 genuine / 300 impostor pairs; ArcFace `w600k_r50` embeddings; landmarks detected on the normal-light counterpart and reused across all conditions; DarkFace identity fidelity with the low-light input as reference) is released as:
+
+| Experiment | File |
+|:---|:---|
+| (1) Identity fidelity (DarkFace) | [scripts/results/biometric_identity_fidelity.csv](scripts/results/biometric_identity_fidelity.csv) |
+| (2) Recognition (LFW, Rank-1..5) | [scripts/results/biometric_recognition_lfw.csv](scripts/results/biometric_recognition_lfw.csv) |
+| (3) Verification (LFW, AUC / TAR@FAR) | [scripts/results/biometric_verification_lfw.csv](scripts/results/biometric_verification_lfw.csv) |
+
+Scripts: [scripts/identity_fidelity.py](scripts/identity_fidelity.py), [scripts/lfw_dark_biometric.py](scripts/lfw_dark_biometric.py), [scripts/biometric_common.py](scripts/biometric_common.py). The full protocol, data layout, and commands are in [scripts/README_biometric.md](scripts/README_biometric.md); each CSV is accompanied by a `*_config.json` recording all paths, degradation parameters, model names, and sample counts. Baseline checkpoints: SCI `medium.pt`, SNR-Net `LOLv1.pth`, Retinexformer `LOL_v1.pth` (official repositories at the recorded commits); PGDB-GAN `weights/LSRW.pt`.
+
 ### Verifying this record
 
 Every item above can be confirmed without re-running any training:
@@ -694,6 +711,8 @@ Every item above can be confirmed without re-running any training:
 6. `scripts/eval_baselines.sh` 
 —
  the exact per-baseline evaluation commands
+
+7. Compare `scripts/results/biometric_identity_fidelity.csv`, `biometric_recognition_lfw.csv` and `biometric_verification_lfw.csv` with the biometric evaluation table in the paper
 
 ---
 
@@ -741,5 +760,6 @@ Please open an [issue](https://github.com/mygithub88888888/PGDB-GAN/issues) for 
 
 | Version | Date | Description |
 |:---|:---|:---|
-| v1.0.0 | 2026-08-21 | Initial release: clean codebase, pre-trained weights, comprehensive documentation |
+| v1.0.0 | 2026-08-21 | Initial release: clean codebase, pre-trained weights, comprehensive documentation, and the complete reproducibility record (baseline pins, result CSVs, biometric evaluation files for Reviewer #3) |
+
 
