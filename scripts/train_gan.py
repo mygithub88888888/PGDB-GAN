@@ -15,12 +15,12 @@ from model_gan import *
 from dataset import DataLoader
 
 parser = argparse.ArgumentParser("ZERO-IG")
-parser.add_argument('--batch_size', type=int, default=1)
+parser.add_argument('--batch_size', type=int, default=16)
 parser.add_argument('--cuda', default=True, type=bool)
 parser.add_argument('--gpu', type=str, default='0')
 parser.add_argument('--seed', type=int, default=2)
-parser.add_argument('--epochs', type=int, default=5001)
-parser.add_argument('--lr', type=float, default=0.0003)
+parser.add_argument('--epochs', type=int, default=100000)
+parser.add_argument('--lr', type=float, default=0.0001)
 parser.add_argument('--save', type=str,
                    default='./train_results/LOL_results')
 parser.add_argument('--model_pretrain', type=str, default='')
