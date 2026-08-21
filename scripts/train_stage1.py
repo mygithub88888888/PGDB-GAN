@@ -79,7 +79,7 @@ def main():
     model.enhance.conv.apply(model.enhance_weights_init)
     model.enhance.out_conv.apply(model.enhance_weights_init)
     model = model.cuda()
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, betas=(0.9, 0.999), weight_decay=3e-4)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, betas=(0.9, 0.999), weight_decay=1e-4)
     MB = utils.count_parameters_in_MB(model)
     logging.info("model size = %f", MB)
     print(MB)
