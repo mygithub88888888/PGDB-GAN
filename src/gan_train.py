@@ -1,10 +1,10 @@
 import torch
 from torch.utils.data import DataLoader
 from torch.optim import Adam
-from model import MDAGenerator, MultiScaleDiscriminator
-from dataset import FaceTextureDataset
-from losses import TextureGANLoss
-import config
+from gan_model import MDAGenerator, MultiScaleDiscriminator
+from gan_dataset import FaceTextureDataset
+from gan_losses import TextureGANLoss
+from gan_config import config
 import os
 from tqdm import tqdm
 import datetime
