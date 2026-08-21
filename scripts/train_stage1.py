@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import glob
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
 import numpy as np
 import utils
 from PIL import Image
@@ -11,7 +12,7 @@ import torch.utils
 import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
 from model import *
-from multi_read_data import DataLoader
+from dataset import DataLoader
 
 
 parser = argparse.ArgumentParser("ZERO-IG")
@@ -129,7 +130,7 @@ def main():
             model.eval()
             with torch.no_grad():
                 for idx, (input, img_name) in enumerate(test_queue):
-                    input = Variable(input, volatile=True).cuda()
+                    input = input.cuda()
                     image_name = img_name[0].split('/')[-1].split('.')[0]
                     L_pred1, L_pred2, L2, s2, s21, s22, H2, H11, H12, H13, s13, H14, s14, H3, s3, H3_pred, H4_pred, L_pred1_L_pred2_diff, H13_H14_diff, H2_blur, H3_blur = model(input)
                     input_name = '%s' % (image_name)
