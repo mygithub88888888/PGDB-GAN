@@ -2,16 +2,17 @@ import os
 import sys
 import time
 import glob
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
 import numpy as np
-import utilspro
+import utils_gan as utilspro
 from PIL import Image
 import logging
 import argparse
 import torch.utils
 import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
-from model111 import *
-from read111 import DataLoader
+from model_gan import *
+from dataset import DataLoader
 
 parser = argparse.ArgumentParser("ZERO-IG")
 parser.add_argument('--batch_size', type=int, default=1)
