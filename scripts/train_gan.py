@@ -66,7 +66,7 @@ def main():
     model = model.cuda()
 
     optimizer = torch.optim.Adam(model.enhance.parameters(), lr=args.lr,
-                                betas=(0.9, 0.999), weight_decay=3e-4)
+                                betas=(0.9, 0.999), weight_decay=1e-4)
     optimizer_d = torch.optim.Adam(model.discriminator.parameters(),
                                   lr=args.lr * 0.1)
 
